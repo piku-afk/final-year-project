@@ -39,14 +39,16 @@ export const GlobalStore: FC = (props) => {
   const { ethersProvider } = state;
   useEffect(() => {
     if (!ethersProvider) return;
-    const handleChainChange = () => {
-      console.log('chain changed');
-      window.location.reload();
+    const handleChainChange = (newNetwork: any, oldNetwork: any) => {
+      console.log('network changed');
+      if (oldNetwork) {
+        window.location.reload();
+      }
     };
-    ethersProvider.on('chainChanged', handleChainChange);
+    ethersProvider.on('network', handleChainChange);
 
     return () => {
-      ethersProvider.off('chainChanged', handleChainChange);
+      ethersProvider.off('network', handleChainChange);
     };
   }, [ethersProvider]);
 

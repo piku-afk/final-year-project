@@ -1,24 +1,26 @@
-import { NextPage } from 'next';
 import { Button, Text } from '@mantine/core';
-import Head from 'next/head';
-import { ExternalLink, Check } from 'tabler-icons-react';
-import { v5 } from 'uuid';
-
+import { showNotification, NotificationProps } from '@mantine/notifications';
 import { useGlobalStore } from 'context/GlobalStore';
-import VotingSVG from 'public/images/voting_nvu7.svg';
-import { Constants } from 'assets/constants';
-import { useCallback, useState } from 'react';
-import { ActionTypes } from 'context/reducer';
-import { NotificationProps, showNotification } from '@mantine/notifications';
-import Link from 'next/link';
 import { LoginLayout } from 'layouts/login';
+import { NextPage } from 'next';
+import Link from 'next/link';
+import { useState } from 'react';
+import { Check } from 'tabler-icons-react';
 
-const Login: NextPage = () => {
+const signMessage = `
+Hi there from Voting dApp! 
+
+Sign this message to prove you have access to this wallet and we'll sign you up. This won't cost you any ether.
+
+To stop hackers using you wallet, here's a unique messageID they cant't guess:
+`;
+
+const SignUp: NextPage = () => {
   const { state, dispatch } = useGlobalStore();
   const { ethersProvider } = state;
   const [loading, setLoading] = useState(false);
 
-  const handleConnect = useCallback(async () => {
+  const handleSignUp = async () => {
     if (!ethersProvider) return;
     setLoading(true);
     const notificationObject: NotificationProps = {
@@ -28,9 +30,11 @@ const Login: NextPage = () => {
       icon: null,
     };
     try {
-      const accounts = await ethersProvider.send('eth_requestAccounts', []);
+      await ethersProvider.send('eth_requestAccounts', []);
+      const signer = ethersProvider.getSigner();
+      const signature = await signer.signMessage(signMessage);
+      console.log(signature);
 
-      dispatch({ type: ActionTypes.setAccount, payload: accounts[0] });
       notificationObject.color = 'green';
       notificationObject.icon = <Check size={20} />;
     } catch (error) {
@@ -44,28 +48,26 @@ const Login: NextPage = () => {
     }
     setLoading(false);
     showNotification(notificationObject);
-  }, [ethersProvider, dispatch]);
+  };
 
   return (
     <LoginLayout>
-      <Head>
-        <title>Welcome</title>
-      </Head>
-      <Text className='my-3'>Login back into your account.</Text>
-
-      <Button loading={loading} variant='light' onClick={handleConnect}>
-        Log{loading ? 'ing' : 'in'} with MetaMask
+      <Text className='my-3'>
+        Get started by connecting your MetaMask wallet.
+      </Text>
+      <Button loading={loading} variant='light' onClick={handleSignUp}>
+        Sign{loading ? 'ing up' : 'up'} with MetaMask
       </Button>
       <Text size='sm' mt={8}>
-        Do not have an account ?&nbsp;
-        <Link href='/signup' passHref>
+        Already a user ?&nbsp;
+        <Link href='/login' passHref>
           <Text
             style={{ fontWeight: 600 }}
             inherit
             component='a'
             variant='link'
             color='blue'>
-            Sign up
+            Log in
           </Text>
         </Link>
       </Text>
@@ -73,4 +75,4 @@ const Login: NextPage = () => {
   );
 };
 
-export default Login;
+export default SignUp;
