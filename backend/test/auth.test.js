@@ -1,4 +1,5 @@
 const Auth = artifacts.require('Auth');
+const AccountJSON = require('../build/contracts/Account.json');
 
 /*
  * uncomment accounts to access the test accounts made available by the
@@ -16,66 +17,46 @@ contract('Auth', function (accounts) {
     assert.ok(instance.address);
   });
 
-  it('should verify address', async () => {
-    // console.log('Account: ', accounts[0]);
-    const message = Buffer.from('hello world ! Piyush');
-    const originalSig = await web3.eth.sign(
-      '0x' + message.toString('hex'),
-      accounts[0]
+  it('should create and verify the account', async () => {
+    // Step 1: Create new account (Sign Up Page)
+    const signUpNonce = 'Piyush';
+    const message = (nonce) => Buffer.from(`Hello ${nonce}`);
+    await instance.signUp(Buffer.from(signUpNonce), 'Piku');
+
+    // Step 2: Login into the new account (Login Page)
+    // Step 2.a:  Get the address of Contract Account and create a web3 instance using it
+    const contractAddress = await instance.getAccountAddress();
+    const accountInstance = new web3.eth.Contract(
+      AccountJSON.abi,
+      contractAddress
     );
-    // const message = '0x8CbaC5e4d803bE2A3A5cd3DbE7174504c6DD0c1C';
-    // console.log('message: ', message);
+
+    // Step 2.b: Get the nonce from the contract
+    // messageHex to be fetched from backend
+    const accountNonce = await accountInstance.methods.getNonce().call();
+    const loginNonce = web3.utils.hexToUtf8(accountNonce);
+    console.log(loginNonce);
+    const messageHex = '0x' + message(loginNonce).toString('hex');
+    console.log(messageHex);
+    const signature = await web3.eth.sign(messageHex, accounts[0]);
+    const r = signature.slice(0, 66);
+    const s = `0x${signature.slice(66, 130)}`;
+    const v = web3.utils.hexToNumber('0x' + signature.slice(130, 132)) + 27;
+
+    // Step 2.c: Sign Message (to be done in frontend)
     const prefix = Buffer.from('\x19Ethereum Signed Message:\n');
-    const hash = web3.utils.sha3(
-      Buffer.concat([prefix, Buffer.from(String(message.length)), message])
+    const hashForVerification = web3.utils.sha3(
+      Buffer.concat([
+        prefix,
+        Buffer.from(String(message(loginNonce).length)),
+        message(loginNonce),
+      ])
     );
-    // console.log('hash: ', hash);
-    // const signature =
-    //   '0xc5e1ee5dd2e62aa333fb8eaa196012fc7439dae65bd69b92c96490d3c102c3244741b5b5ef4f855bffac4071a2519b12b2381df8e1c351f4b8a86bce23fbdd2b1c';
+    const result = await accountInstance.methods
+      .verify(hashForVerification, v, r, s)
+      .call();
 
-    const sig = originalSig.slice(2);
-    const r = `0x${sig.slice(0, 64)}`;
-    const s = `0x${sig.slice(64, 128)}`;
-    const v = web3.utils.hexToNumber('0x' + sig.slice(128, 130)) + 27;
-
-    // console.log('original sig: ', originalSig);
-    // console.log('sig: ', sig);
-    // console.log('r: ', r);
-    // console.log('s: ', s);
-    // console.log('v: ', v);
-    // const temp = '0x' + hash;
-
-    const result = await instance.verify.call(hash, v, r, s);
-    // console.log('result: ', result);
-    assert.equal(accounts[0], result);
+    assert.equal(signUpNonce, loginNonce);
+    assert.isTrue(result);
   });
-
-  // it('should verify address', async () => {
-  //   console.log('Account: ', accounts[0]);
-  //   const message = 'hello world ! Piyush';
-  //   // const message = '0x8CbaC5e4d803bE2A3A5cd3DbE7174504c6DD0c1C';
-  //   // console.log('message: ', message);
-  //   const prefix = '\x19Ethereum Signed Message:\n' + message.length;
-  //   const hash = web3.utils.sha3(prefix + message);
-  //   console.log('hash: ', hash);
-  //   // const signature =
-  //   //   '0xc5e1ee5dd2e62aa333fb8eaa196012fc7439dae65bd69b92c96490d3c102c3244741b5b5ef4f855bffac4071a2519b12b2381df8e1c351f4b8a86bce23fbdd2b1c';
-
-  //   const originalSig = await web3.eth.sign(hash, accounts[0]);
-  //   const sig = originalSig.slice(2);
-  //   const r = `0x${sig.slice(0, 64)}`;
-  //   const s = `0x${sig.slice(64, 128)}`;
-  //   const v = web3.utils.hexToNumber('0x' + sig.slice(128, 130)) + 27;
-
-  //   console.log('original sig: ', originalSig);
-  //   console.log('sig: ', sig);
-  //   console.log('r: ', r);
-  //   console.log('s: ', s);
-  //   console.log('v: ', v);
-  //   // const temp = '0x' + hash;
-
-  //   const result = await instance.verify.call(hash, v, r, s);
-  //   console.log('result: ', result);
-  //   // assert.isTrue(true);
-  // });
 });

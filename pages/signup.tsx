@@ -1,57 +1,51 @@
 import { Button, Text } from '@mantine/core';
 import { showNotification, NotificationProps } from '@mantine/notifications';
+import { getSignMessage } from 'assets/helpers/getSignMessage';
+import { handleLoginError } from 'assets/helpers/handleErrors';
 import { useGlobalStore } from 'context/GlobalStore';
+import { useAuthContract } from 'hooks/useAuthContract';
 import { LoginLayout } from 'layouts/login';
 import { NextPage } from 'next';
 import Link from 'next/link';
 import { useState } from 'react';
 import { Check } from 'tabler-icons-react';
-
-const signMessage = `
-Hi there from Voting dApp! 
-
-Sign this message to prove you have access to this wallet and we'll sign you up. This won't cost you any ether.
-
-To stop hackers using you wallet, here's a unique messageID they cant't guess:
-`;
+import WelcomeSVG from 'public/images/welcoming_re_x0qo.svg';
 
 const SignUp: NextPage = () => {
   const { state, dispatch } = useGlobalStore();
   const { ethersProvider } = state;
   const [loading, setLoading] = useState(false);
+  const authContract = useAuthContract();
 
   const handleSignUp = async () => {
     if (!ethersProvider) return;
+    if (!authContract) return;
     setLoading(true);
     const notificationObject: NotificationProps = {
       message: 'You are successfully logged in.',
       color: 'red',
-      autoClose: 3500,
       icon: null,
     };
     try {
       await ethersProvider.send('eth_requestAccounts', []);
       const signer = ethersProvider.getSigner();
+      const nonce = 'some-unique-codesome-unique-code';
+      const signMessage = getSignMessage(nonce);
       const signature = await signer.signMessage(signMessage);
       console.log(signature);
+      await authContract.signUp(Buffer.from(nonce), 'Piyush');
 
       notificationObject.color = 'green';
       notificationObject.icon = <Check size={20} />;
     } catch (error) {
-      const { code } = error as { code: number };
-      notificationObject.message = 'Something went wrong. Please try again.';
-
-      if (code === 4001) {
-        notificationObject.message =
-          'You will need to connect to MetaMask in order to continue.';
-      }
+      handleLoginError(error, notificationObject);
     }
     setLoading(false);
     showNotification(notificationObject);
   };
 
   return (
-    <LoginLayout>
+    <LoginLayout image={WelcomeSVG}>
       <Text className='my-3'>
         Get started by connecting your MetaMask wallet.
       </Text>

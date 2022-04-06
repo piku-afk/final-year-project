@@ -5,6 +5,7 @@ import {
   Center,
   Container,
   Image,
+  MediaQuery,
   Skeleton,
   Text,
   Title,
@@ -14,12 +15,19 @@ import VotingSVG from 'public/images/voting_nvu7.svg';
 import { useGlobalStore } from 'context/GlobalStore';
 import { Constants } from 'assets/constants';
 import { ExternalLink } from 'tabler-icons-react';
+import { useRouter } from 'next/router';
 
-export const LoginLayout: FC = (props) => {
-  const { children } = props;
+interface LoginLayoutPropTypes {
+  image: { src: string };
+}
+
+export const LoginLayout: FC<LoginLayoutPropTypes> = (props) => {
+  const { children, image } = props;
   const { state } = useGlobalStore();
   const { isInitializing, ethersProvider } = state;
   const [chainId, setChainId] = useState<string | null>(null);
+  const { pathname } = useRouter();
+  const isLogin = pathname === '/login';
 
   useEffect(() => {
     if (!ethersProvider) return;
@@ -38,17 +46,20 @@ export const LoginLayout: FC = (props) => {
   return (
     <Container style={{ height: '100vh' }} fluid>
       <Center style={{ height: '100%', textAlign: 'center' }}>
-        <Card style={{ maxWidth: 400 }} withBorder shadow='xs' px='xl' py={32}>
-          <Text align='center'>Hi there,</Text>
-          <Title order={3} mt={0}>
-            Welcome to Online Voting dApp
+        <Card style={{ maxWidth: 375 }} withBorder shadow='md' px='xl' py={32}>
+          {!isLogin && <Text align='center'>Hi there, welcome to</Text>}
+          <Title order={3} my={3}>
+            Electronic Voting System
+          </Title>
+          <Title order={6} sx={(theme) => ({ color: theme.colors.gray[6] })}>
+            A ethereum blockchain based dApp
           </Title>
           <Box
             style={{
               width: 200,
-              margin: '40px auto',
+              margin: `${isLogin ? 40 : 30}px auto`,
             }}>
-            <Image src={VotingSVG.src} alt='Voting Image' />
+            <Image src={image.src || VotingSVG.src} alt='Voting Image' />
           </Box>
           {!ethersProvider ? (
             <>
