@@ -79,14 +79,12 @@ const Login: NextPage = () => {
   return (
     <LoginLayout image={SecureLogin}>
       <Head>
-        <title>Welcome</title>
+        <title>Login | Voting dApp</title>
       </Head>
-      <Text className='my-3'>
-        Welcome back, login to continue to your account.
-      </Text>
+      <Text my={16}>Welcome back, login to continue to your account.</Text>
 
       <Button loading={loading} variant='light' onClick={handleConnect}>
-        Log{loading ? 'ing' : 'in'} with MetaMask
+        Log{loading ? 'ing' : ' in'} with MetaMask
       </Button>
       <Text size='sm' mt={8}>
         Do not have an account ?&nbsp;

@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Check } from 'tabler-icons-react';
 import WelcomeSVG from 'public/images/welcoming_re_x0qo.svg';
+import Head from 'next/head';
 
 const SignUp: NextPage = () => {
   const { state, dispatch } = useGlobalStore();
@@ -46,11 +47,12 @@ const SignUp: NextPage = () => {
 
   return (
     <LoginLayout image={WelcomeSVG}>
-      <Text className='my-3'>
-        Get started by connecting your MetaMask wallet.
-      </Text>
+      <Head>
+        <title>Register | Voting dApp</title>
+      </Head>
+      <Text my={16}>Get started by connecting your MetaMask wallet.</Text>
       <Button loading={loading} variant='light' onClick={handleSignUp}>
-        Sign{loading ? 'ing up' : 'up'} with MetaMask
+        Sign{loading ? 'ing up' : ' up'} with MetaMask
       </Button>
       <Text size='sm' mt={8}>
         Already a user ?&nbsp;

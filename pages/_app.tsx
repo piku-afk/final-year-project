@@ -10,6 +10,7 @@ import { AppProps } from 'next/app';
 import Head from 'next/head';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { NotificationsProvider } from '@mantine/notifications';
+import 'styles/globals.css';
 
 import { GlobalStore } from 'context/GlobalStore';
 import { MantineProvider } from 'components/MantineProvider';

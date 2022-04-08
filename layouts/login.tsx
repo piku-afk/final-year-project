@@ -16,6 +16,7 @@ import { useGlobalStore } from 'context/GlobalStore';
 import { Constants } from 'assets/constants';
 import { ExternalLink } from 'tabler-icons-react';
 import { useRouter } from 'next/router';
+import { useMediaQuery } from 'hooks/useMediaQuery';
 
 interface LoginLayoutPropTypes {
   image: { src: string };
@@ -49,10 +50,11 @@ export const LoginLayout: FC<LoginLayoutPropTypes> = (props) => {
         <Card style={{ maxWidth: 375 }} withBorder shadow='md' px='xl' py={32}>
           {!isLogin && <Text align='center'>Hi there, welcome to</Text>}
           <Title order={3} my={3}>
-            Electronic Voting System
+            {/* Electronic Voting System */}
+            {Constants.projectName}
           </Title>
           <Title order={6} sx={(theme) => ({ color: theme.colors.gray[6] })}>
-            A ethereum blockchain based dApp
+            An ethereum blockchain based dApp
           </Title>
           <Box
             style={{
