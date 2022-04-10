@@ -8,13 +8,13 @@ export enum Constants {
   projectName = 'E-Voting dApp',
 
   // This won't cost you any ether.
-  //   signMessage = `
-  // Hi there from Voting dApp!
+  signMessage = `
+  Hi there from Voting dApp!
 
-  // Sign this message to prove you have access to this wallet and we'll sign you up.
+  Sign this message to prove you have access to this wallet and we'll sign you up.
 
-  // To stop hackers using you wallet, here's a unique messageID they cant't guess:
-  // `,
+  To stop hackers using you wallet, here's a unique messageID they cant't guess:
+  `,
 
   tokenName = 'FINAL_YEAR_TOKEN',
 }
