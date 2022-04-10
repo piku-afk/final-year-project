@@ -11,14 +11,41 @@ import {
   ThemeIcon,
   Title,
 } from '@mantine/core';
-import { NextPage } from 'next';
-import Head from 'next/head';
-import { AppFeatures, Constants } from 'utils/constants';
-import { useMediaQuery } from 'hooks';
-import Link from 'next/link';
 import { FlexContainer } from 'components/FlexContainer';
+import { useMediaQuery } from 'hooks';
 import { Footer } from 'layouts/Footer';
+import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
+import Head from 'next/head';
+import Link from 'next/link';
 import DotsSvg from 'public/images/image.svg';
+import { withSessionSsr } from 'utils/configs/ironSession';
+import { AppFeatures, Constants } from 'utils/constants';
+import { prisma } from 'prisma/prisma';
+
+export const getServerSideProps: GetServerSideProps = withSessionSsr(
+  async (context: GetServerSidePropsContext) => {
+    const { req } = context;
+    // @ts-ignore
+    const { user } = req.session as { user: { userId: number } };
+
+    if (user) {
+      const { userId } = user;
+      const savedUser = await prisma.user.findFirst({ where: { id: userId } });
+      if (savedUser) {
+        return {
+          redirect: {
+            destination: `/${savedUser.id}/dashboard`,
+            permanent: false,
+          },
+        };
+      }
+    }
+
+    return {
+      props: {},
+    };
+  }
+);
 
 const ButtonsContainer = () => {
   const { isExtraSmall } = useMediaQuery();

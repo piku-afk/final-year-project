@@ -11,9 +11,28 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  email     String   @unique
+  id        Int        @id @default(autoincrement())
+  createdAt DateTime   @default(now())
+  email     String     @unique
   name      String
   password  String
+  Election  Election[]
+}
+
+model Election {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String?
+  createdBy   User      @relation(fields: [userId], references: [id])
+  userId      Int
+  createdAt   DateTime  @default(now())
+  start       DateTime  @default(now())
+  end         DateTime?
+  status      Status    @default(DRAFT)
+}
+
+enum Status {
+  DRAFT
+  ONGOING
+  COMPLETED
 }

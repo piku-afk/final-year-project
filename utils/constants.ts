@@ -25,6 +25,8 @@ export const Errors = {
     message:
       'No account found for the current MetaMask account. Consider signing up.',
   },
+  invalidToken:
+    'Invalid token found. Please log in to continue to your account.',
 } as const;
 
 export const AppFeatures = [

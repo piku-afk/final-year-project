@@ -1,5 +1,13 @@
 {
   "version": "0.2",
   "language": "en",
-  "words": ["mantine", "tabler", "signup", "Belgaum", "Visvesvaraya", "Acharya"]
+  "words": [
+    "mantine",
+    "tabler",
+    "signup",
+    "Belgaum",
+    "Visvesvaraya",
+    "Acharya",
+    "middlewares"
+  ]
 }

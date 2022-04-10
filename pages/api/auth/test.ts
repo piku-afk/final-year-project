@@ -1,21 +1,22 @@
-import jwt from 'jsonwebtoken';
 import { NextApiRequest, NextApiResponse } from 'next';
 import nc from 'next-connect';
-import { ncOptions } from 'server/configs';
-import passport from 'server/utils/strategies/jwtStrategy';
+import { ncOptions } from 'utils/configs';
+import { withSessionRoute } from 'utils/configs/ironSession';
 
 const handler = nc(ncOptions);
 
-interface ExtendedNextApiRequest extends NextApiRequest {
-  body: { email: string; password: string };
-  user: any;
-}
+type ExtendedNextApiRequest = NextApiRequest & {
+  session: {
+    user: {
+      id: number;
+    };
+  };
+};
 
-handler
-  .use(passport.initialize())
-  .use(passport.authenticate('jwt', { session: false }))
-  .get(async (req: ExtendedNextApiRequest, res: NextApiResponse) => {
-    return res.json({ access_token: req.user });
-  });
+export default withSessionRoute(
+  handler.get(async (req: ExtendedNextApiRequest, res: NextApiResponse) => {
+    return res.json({ ...req.session.user });
+  })
+);
 
-export default handler;
+// export default handler;

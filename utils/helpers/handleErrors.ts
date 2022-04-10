@@ -5,7 +5,7 @@ export const handleLoginError = (
   error: unknown,
   notificationObject: NotificationProps
 ) => {
-  console.error(error);
+  // console.error(error);
   const { code, message } = error as { code: number; message: string };
   notificationObject.message =
     'Something went wrong. Please try again or maybe check your current account in MetaMask.';

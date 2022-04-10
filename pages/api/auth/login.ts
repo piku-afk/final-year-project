@@ -1,19 +1,23 @@
 import { Joi, validate } from 'express-validation';
-import jwt from 'jsonwebtoken';
 import { NextApiRequest, NextApiResponse } from 'next';
 import nc from 'next-connect';
-import { ncOptions } from 'server/configs';
+import { ncOptions } from 'utils/configs';
+import { LocalPassword } from 'utils/middlewares';
 import { JoiValidators } from 'server/utils';
-import passport from 'server/utils/strategies/localStrategy';
+import { withSessionRoute } from 'utils/configs/ironSession';
 
 const handler = nc(ncOptions);
 
-interface ExtendedNextApiRequest extends NextApiRequest {
-  body: { email: string; password: string };
-  user: any;
-}
+type ExtendedNextApiRequest = NextApiRequest & {
+  session: {
+    user: {
+      id: number;
+    };
+  };
+  user: { id: number };
+};
 
-const { email, password } = JoiValidators;
+const { email, password } = JoiValidators.user;
 const validateBody = {
   body: Joi.object({
     email,
@@ -23,14 +27,15 @@ const validateBody = {
 
 handler
   .use(validate(validateBody))
-  .use(passport.initialize())
-  .use(passport.authenticate('local', { session: false }))
+  .use(LocalPassword.initialize())
+  .use(LocalPassword.authenticate('local', { session: false }))
   .post(async (req: ExtendedNextApiRequest, res: NextApiResponse) => {
     const { id } = req.user;
-    const privateKey = process.env.TOKEN_SECRET || '';
-    const token = jwt.sign({ sub: id }, privateKey);
 
-    return res.json({ access_token: token, id });
+    req.session.user = { id: id };
+    await req.session.save();
+
+    return res.json({ message: 'success', userId: id });
   });
 
-export default handler;
+export default withSessionRoute(handler);

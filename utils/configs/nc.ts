@@ -3,7 +3,6 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { Options } from 'next-connect';
 
 export const ncOptions: Options<NextApiRequest, NextApiResponse> = {
-  // @ts-ignore
   onError: (err, req, res, next) => {
     console.error(err.stack);
     if (err instanceof ValidationError) {

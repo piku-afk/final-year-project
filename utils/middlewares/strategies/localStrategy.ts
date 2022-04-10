@@ -30,4 +30,4 @@ const localStrategy = new LocalStrategy.Strategy(
 
 passport.use(localStrategy);
 
-export default passport;
+export { passport as LocalPassword };

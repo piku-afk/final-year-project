@@ -58,11 +58,9 @@ const Login: NextPage = () => {
         url: '/api/auth/login',
         data: formData,
       });
-      const { access_token, id } = data;
-      if (access_token) {
-        localStorage.setItem(Constants.tokenName, access_token);
-
-        push(`/${id}/dashboard`);
+      const { message, userId } = data;
+      if (message === 'success') {
+        push(`/${userId}/dashboard`);
       }
       showNotification(notificationObject);
     } catch (error: any) {

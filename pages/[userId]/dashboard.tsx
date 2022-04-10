@@ -15,9 +15,14 @@ import { Filter } from 'components/Dashboard/Filter';
 import { NewElection } from 'components/Dashboard/NewElection';
 import { Footer } from 'layouts/Footer';
 import { Header } from 'layouts/Header';
-import { NextPage } from 'next';
+import { GetServerSideProps, NextPage } from 'next';
 import Head from 'next/head';
 import { useState } from 'react';
+
+// export const getServerSideProps: GetServerSideProps = async (context) => {
+
+//   return { props: {} };
+// };
 
 const DashBoard: NextPage = () => {
   const [newElection, setNewElection] = useState(false);
