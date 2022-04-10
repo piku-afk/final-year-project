@@ -1,5 +1,5 @@
 import { NotificationProps } from '@mantine/notifications';
-import { Errors } from 'assets/constants';
+import { Errors } from 'utils/constants';
 
 export const handleLoginError = (
   error: unknown,

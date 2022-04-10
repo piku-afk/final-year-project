@@ -1,36 +1,35 @@
 import {
   Anchor,
-  BackgroundImage,
   Container,
   Footer as MantineFooter,
   Text,
 } from '@mantine/core';
-import { Constants } from 'assets/constants';
+import { Constants } from 'utils/constants';
 import { useMediaQuery } from 'hooks';
 import { FC } from 'react';
-import DotSvg from 'public/images/image.svg';
 
-export const Footer: FC = ({ children }) => {
+interface FooterProps {
+  background?: 'white' | 'transparent';
+}
+
+export const Footer: FC<FooterProps> = (props) => {
+  const { background = 'white', children } = props;
   const { isSmall, isLarge } = useMediaQuery();
 
   return (
     <>
       {children}
-      <BackgroundImage
-        sx={(theme) => ({
-          backgroundColor: '#12283a',
-          color: 'white',
-          backgroundAttachment: 'fixed',
-          borderTop: `1px solid ${theme.colors.gray[5]}`,
-        })}
-        src={DotSvg.src}
-        component={MantineFooter}
+      <MantineFooter
         height='auto'
-        py={32}>
+        py={32}
+        sx={(theme) => ({
+          backgroundColor: background || 'transparent',
+          color: background === 'white' ? 'inherit' : theme.colors.gray[2],
+        })}>
         <Container size={isSmall ? 'sm' : isLarge ? 'md' : 'xl'}>
-          <Text size='sm'>
-            {Constants.projectName} is a product made as a final year project by
-            the 8th-semester students of{' '}
+          <Text size='sm' component='p' mb={0}>
+            {Constants.projectName} is a final year project made by the
+            8th-semester students of{' '}
             <Anchor
               color='cyan'
               sx={(theme) => ({
@@ -42,7 +41,7 @@ export const Footer: FC = ({ children }) => {
               rel='noreferrer'>
               Acharya Institute of Technology
             </Anchor>{' '}
-            in fulfillment of the award of the degree of{' '}
+            in fulfillment for the award of the degree of{' '}
             <strong>
               Bachelor of Engineering in Computer Science &amp; Engineering
             </strong>{' '}
@@ -61,7 +60,7 @@ export const Footer: FC = ({ children }) => {
             , Belgaum during the academic year 2021-2022.{' '}
           </Text>
         </Container>
-      </BackgroundImage>
+      </MantineFooter>
     </>
   );
 };

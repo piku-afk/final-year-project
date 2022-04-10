@@ -33,7 +33,8 @@ a {
   }
 }
 
-.hero-background {
+.hero-background,
+.hero-background:hover {
   background-image: linear-gradient(90deg, #1c7ed6, #20c997);
   background-position: 50% 20%;
   background-size: 400%;

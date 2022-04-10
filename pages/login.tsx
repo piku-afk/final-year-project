@@ -1,92 +1,136 @@
 import { NextPage } from 'next';
-import { Button, Text } from '@mantine/core';
-import Head from 'next/head';
-import { Check } from 'tabler-icons-react';
-
-import { useGlobalStore } from 'context/GlobalStore';
-import { useCallback, useState } from 'react';
-import { ActionTypes } from 'context/reducer';
+import {
+  ActionIcon,
+  Alert,
+  Button,
+  Collapse,
+  Grid,
+  Group,
+  PasswordInput,
+  Text,
+  TextInput,
+} from '@mantine/core';
+import { useForm } from '@mantine/form';
 import { NotificationProps, showNotification } from '@mantine/notifications';
+import axios from 'axios';
+import Head from 'next/head';
 import Link from 'next/link';
-import { LoginLayout } from 'layouts/login';
-import { getSignMessage } from 'assets/helpers/getSignMessage';
-import { useAuthContract } from 'hooks/useAuthContract';
-import { useAccountContract } from 'hooks/useAccountContract';
-import { ethers } from 'ethers';
 import { useRouter } from 'next/router';
-import { handleLoginError } from 'assets/helpers/handleErrors';
-import { Errors } from 'assets/constants';
+import { LoginLayout } from 'layouts/Login';
 import SecureLogin from 'public/images/secure_files_re_6vdh.svg';
+import { useState } from 'react';
+import { Check, X, Mail, Lock, AlertCircle } from 'tabler-icons-react';
+import { ValidationMessages } from 'utils/validationMessages';
+import { loginErrorHandler } from 'utils/errorHandlers/login';
+import { Constants } from 'utils/constants';
+
+interface FormInterface {
+  email: string;
+  password: string;
+}
 
 const Login: NextPage = () => {
   const { push } = useRouter();
-  const authContract = useAuthContract();
-  const { state, dispatch } = useGlobalStore();
-  const accountContract = useAccountContract(authContract);
   const [loading, setLoading] = useState(false);
-  const { ethersProvider } = state;
+  const [showError, setShowError] = useState(false);
+  const form = useForm<FormInterface>({
+    initialValues: {
+      email: '',
+      password: '',
+    },
+    validate: {
+      password: (value) =>
+        value.length < 3 ? ValidationMessages.signUp.password : null,
+    },
+  });
 
-  const handleConnect = useCallback(async () => {
-    if (!ethersProvider) return;
-    if (!authContract) return;
-    if (!accountContract) return;
-    setLoading(true);
+  const handleSubmit = async (formData: FormInterface) => {
     const notificationObject: NotificationProps = {
-      message: 'You are successfully logged in.',
-      color: 'red',
-      icon: null,
+      message: 'Successfully signed up.',
+      color: 'green',
+      icon: <Check />,
     };
+    setLoading(true);
+    setShowError(false);
     try {
-      const accounts = await ethersProvider.send('eth_requestAccounts', []);
-      // Step 1: Get nonce from backend
-      const nonceHash = await accountContract.getNonce();
-      const nonce = ethers.utils.toUtf8String(nonceHash);
+      const { data } = await axios({
+        method: 'POST',
+        url: '/api/auth/login',
+        data: formData,
+      });
+      const { access_token, id } = data;
+      if (access_token) {
+        localStorage.setItem(Constants.tokenName, access_token);
 
-      // Step 2: Sign message using the nonce fetched above
-      const signMessage = getSignMessage(nonce);
-      const signer = ethersProvider.getSigner();
-      const signature = await signer.signMessage(signMessage);
-      const r = signature.slice(0, 66);
-      const s = `0x${signature.slice(66, 130)}`;
-      const v = Number('0x' + signature.slice(130, 132)) || 27;
-
-      // Step 3: verify address
-      const prefix = Buffer.from('\x19Ethereum Signed Message:\n');
-      const hashForVerification = ethers.utils.keccak256(
-        Buffer.concat([
-          prefix,
-          Buffer.from(String(Buffer.from(signMessage).length)),
-          Buffer.from(signMessage),
-        ])
-      );
-      const result = await accountContract.verify(hashForVerification, v, r, s);
-      // show error when validation result is false
-      // if (!result) throw new Error('Wrong Account');
-      if (!result) throw Errors.failedLogin;
-
-      // navigate to homepage when validation result is true
-      dispatch({ type: ActionTypes.setAccount, payload: accounts[0] });
-      notificationObject.icon = <Check size={20} />;
-      notificationObject.color = 'green';
-      push('/');
-    } catch (error) {
-      handleLoginError(error, notificationObject);
+        push(`/${id}/dashboard`);
+      }
+      showNotification(notificationObject);
+    } catch (error: any) {
+      loginErrorHandler({ error, callback: () => setShowError(true) });
     }
     setLoading(false);
-    showNotification(notificationObject);
-  }, [ethersProvider, dispatch, authContract, accountContract, push]);
+  };
 
   return (
     <LoginLayout image={SecureLogin}>
       <Head>
         <title>Login | Voting dApp</title>
       </Head>
-      <Text my={16}>Welcome back, login to continue to your account.</Text>
+      <Text align='center' my={16}>
+        Welcome back, log in to continue to your account.
+      </Text>
 
-      <Button loading={loading} variant='light' onClick={handleConnect}>
-        Log{loading ? 'ing' : ' in'} with MetaMask
-      </Button>
-      <Text size='sm' mt={8}>
+      <Collapse in={showError}>
+        <Alert icon={<AlertCircle size={16} />} color='red' withCloseButton>
+          <Group>
+            <Text color='red' size='sm' style={{ flexGrow: 1 }}>
+              Incorrect email or password
+            </Text>
+            <ActionIcon
+              variant='transparent'
+              color='red'
+              size='sm'
+              onClick={() => setShowError(false)}>
+              <X size={16} />
+            </ActionIcon>
+          </Group>
+        </Alert>
+      </Collapse>
+
+      {/* @ts-ignore */}
+      <Grid mt={4} component='form' onSubmit={form.onSubmit(handleSubmit)}>
+        <Grid.Col>
+          <TextInput
+            disabled={loading}
+            icon={<Mail size={18} />}
+            label='Email'
+            type='email'
+            required
+            {...form.getInputProps('email')}
+          />
+        </Grid.Col>
+        <Grid.Col>
+          <PasswordInput
+            disabled={loading}
+            icon={<Lock size={18} />}
+            label='Password'
+            required
+            {...form.getInputProps('password')}
+          />
+        </Grid.Col>
+        <Grid.Col>
+          <Button
+            disabled={loading}
+            loading={loading}
+            type='submit'
+            fullWidth
+            color='teal'>
+            Log In
+          </Button>
+        </Grid.Col>
+      </Grid>
+
+      <Text align='center' size='sm' mt={8}>
         Do not have an account ?&nbsp;
         <Link href='/signup' passHref>
           <Text
@@ -94,7 +138,7 @@ const Login: NextPage = () => {
             inherit
             component='a'
             variant='link'
-            color='blue'>
+            color='teal'>
             Sign up
           </Text>
         </Link>

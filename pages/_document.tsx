@@ -1,4 +1,10 @@
-import Document, { DocumentContext } from 'next/document';
+import Document, {
+  DocumentContext,
+  Html,
+  Head,
+  Main,
+  NextScript,
+} from 'next/document';
 import { ServerStyles, createStylesServer } from '@mantine/next';
 
 const stylesServer = createStylesServer();
@@ -18,5 +24,16 @@ export default class _Document extends Document {
         </>
       ),
     };
+  }
+  render() {
+    return (
+      <Html lang='en'>
+        <Head />
+        <body style={{ backgroundColor: '#f8fafc' }}>
+          <Main />
+          <NextScript />
+        </body>
+      </Html>
+    );
   }
 }

@@ -13,7 +13,7 @@ import {
 } from '@mantine/core';
 import { NextPage } from 'next';
 import Head from 'next/head';
-import { AppFeatures, Constants } from 'assets/constants';
+import { AppFeatures, Constants } from 'utils/constants';
 import { useMediaQuery } from 'hooks';
 import Link from 'next/link';
 import { FlexContainer } from 'components/FlexContainer';
@@ -63,7 +63,7 @@ const Hero: NextPage = () => {
         backgroundAttachment: 'fixed',
         backgroundPosition: 'left',
       }}>
-      <Footer>
+      <Footer background='transparent'>
         <Head>
           <title>Welcome | {Constants.projectName}</title>
         </Head>
@@ -73,7 +73,7 @@ const Hero: NextPage = () => {
             <Header
               style={{ borderBottom: 'none', backgroundColor: 'transparent' }}
               height='auto'
-              className='w-100 d-flex justify-content-between'
+              className='d-flex justify-content-between'
               py={24}>
               <Title className='text-white' order={3}>
                 {Constants.projectName}
@@ -126,7 +126,12 @@ const Hero: NextPage = () => {
                   align={isLarge ? 'center' : undefined}
                   order={heroSubOrder}
                   mt={8}>
-                  <Text inherit color='#ADB5BD' style={{ fontWeight: 400 }}>
+                  <Text
+                    inherit
+                    sx={(theme) => ({
+                      fontWeight: 400,
+                      color: theme.colors.gray[4],
+                    })}>
                     {Constants.projectName} allows organizations, groups and
                     communities to make decisions online by providing a modern,
                     secure, and effective e-voting technology.
@@ -142,13 +147,14 @@ const Hero: NextPage = () => {
                     <Button
                       component='a'
                       sx={(theme) => ({
-                        '&:hover': { color: theme.colors.cyan[7] },
+                        '&:hover': { color: theme.colors.cyan[8] },
                       })}
                       color='cyan'
                       size='md'
                       variant='light'
                       mt={24}>
-                      View ongoing elections
+                      {/* View your elections */}
+                      Get Started
                     </Button>
                   </Link>
                 )}
@@ -200,7 +206,12 @@ const Hero: NextPage = () => {
               <Title order={1} mb={8}>
                 Start building your first election
               </Title>
-              <Title order={4} style={{ fontWeight: 400 }}>
+              <Title
+                order={4}
+                sx={(theme) => ({
+                  fontWeight: 400,
+                  color: theme.colors.gray[4],
+                })}>
                 {Constants.projectName} is the a powerful online voting
                 decentralized application.
                 <br /> Don&apos;t believe us? See for yourself.
@@ -210,7 +221,7 @@ const Hero: NextPage = () => {
               <Button
                 component='a'
                 sx={(theme) => ({
-                  '&:hover': { color: theme.colors.cyan[7] },
+                  '&:hover': { color: theme.colors.cyan[8] },
                 })}
                 color='cyan'
                 size='md'

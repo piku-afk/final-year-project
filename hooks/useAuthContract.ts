@@ -1,6 +1,6 @@
 import { Contract, ethers } from 'ethers';
 import { useGlobalStore } from 'context/GlobalStore';
-import AuthJSON from 'backend/build/contracts/Auth.json';
+import AuthJSON from 'server/truffle/build/contracts/Auth.json';
 import { useCallback, useEffect, useState } from 'react';
 
 export const useAuthContract = () => {

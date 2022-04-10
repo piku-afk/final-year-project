@@ -1,4 +1,4 @@
-import { Constants } from 'assets/constants';
+import { Constants } from 'utils/constants';
 
 export const getSignMessage = (nonce: string) => {
   return `${Constants.signMessage}

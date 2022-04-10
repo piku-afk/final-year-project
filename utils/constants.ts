@@ -1,20 +1,22 @@
 import { ChartBar, DeviceMobile, Key } from 'tabler-icons-react';
 
 export enum Constants {
-  metamaskLink = 'https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn?hl=en',
+  metamaskLink = 'https://metamask.io/',
 
   deployedNetwork = 'Ganache Test Network',
 
   projectName = 'E-Voting dApp',
 
   // This won't cost you any ether.
-  signMessage = `
-Hi there from Voting dApp! 
-    
-Sign this message to prove you have access to this wallet and we'll sign you up. 
+  //   signMessage = `
+  // Hi there from Voting dApp!
 
-To stop hackers using you wallet, here's a unique messageID they cant't guess:
-`,
+  // Sign this message to prove you have access to this wallet and we'll sign you up.
+
+  // To stop hackers using you wallet, here's a unique messageID they cant't guess:
+  // `,
+
+  tokenName = 'FINAL_YEAR_TOKEN',
 }
 
 export const Errors = {
