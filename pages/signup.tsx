@@ -43,9 +43,9 @@ const SignUp: NextPage = () => {
     },
     validate: {
       name: (value) =>
-        value.length < 3 ? ValidationMessages.signUp.email : null,
+        value.length < 3 ? ValidationMessages.signUp.name : null,
       password: (value) =>
-        value.length < 3 ? ValidationMessages.signUp.password : null,
+        value.length < 6 ? ValidationMessages.signUp.password : null,
       confirmPassword: (value, values) =>
         value !== values.password
           ? ValidationMessages.signUp.confirmPassword

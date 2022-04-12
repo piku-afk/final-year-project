@@ -32,7 +32,7 @@ interface FormInterface {
 const Login: NextPage = () => {
   const { push } = useRouter();
   const [loading, setLoading] = useState(false);
-  const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const form = useForm<FormInterface>({
     initialValues: {
       email: '',
@@ -40,7 +40,7 @@ const Login: NextPage = () => {
     },
     validate: {
       password: (value) =>
-        value.length < 3 ? ValidationMessages.signUp.password : null,
+        value.length < 6 ? ValidationMessages.signUp.password : null,
     },
   });
 
@@ -51,7 +51,7 @@ const Login: NextPage = () => {
       icon: <Check />,
     };
     setLoading(true);
-    setShowError(false);
+    setErrorMessage('');
     try {
       const { data } = await axios({
         method: 'POST',
@@ -64,7 +64,7 @@ const Login: NextPage = () => {
       }
       showNotification(notificationObject);
     } catch (error: any) {
-      loginErrorHandler({ error, callback: () => setShowError(true) });
+      loginErrorHandler({ error, callback: setErrorMessage });
     }
     setLoading(false);
   };
@@ -78,20 +78,24 @@ const Login: NextPage = () => {
         Welcome back, log in to continue to your account.
       </Text>
 
-      <Collapse in={showError}>
+      <Collapse in={Boolean(errorMessage)}>
         <Alert icon={<AlertCircle size={16} />} color='red' withCloseButton>
-          <Group>
-            <Text color='red' size='sm' style={{ flexGrow: 1 }}>
-              Incorrect email or password
-            </Text>
-            <ActionIcon
-              variant='transparent'
-              color='red'
-              size='sm'
-              onClick={() => setShowError(false)}>
-              <X size={16} />
-            </ActionIcon>
-          </Group>
+          <Grid>
+            <Grid.Col span={10}>
+              <Text color='red' size='sm' style={{ flexGrow: 2 }}>
+                {errorMessage}
+              </Text>
+            </Grid.Col>
+            <Grid.Col span={2}>
+              <ActionIcon
+                variant='transparent'
+                color='red'
+                size='sm'
+                onClick={() => setErrorMessage('')}>
+                <X size={16} />
+              </ActionIcon>
+            </Grid.Col>
+          </Grid>
         </Alert>
       </Collapse>
 

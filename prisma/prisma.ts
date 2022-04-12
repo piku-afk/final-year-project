@@ -1,5 +1,4 @@
 import { PrismaClient } from '@prisma/client';
-import { HashPassword } from 'prisma/middlewares';
 
 declare global {
   // allow global `var` declarations
@@ -14,6 +13,3 @@ export const prisma =
   });
 
 if (process.env.NODE_ENV !== 'production') global.prisma = prisma;
-
-// attaching middleware
-prisma.$use(HashPassword);

@@ -27,6 +27,7 @@ export const Errors = {
   },
   invalidToken:
     'Invalid token found. Please log in to continue to your account.',
+  unauthorized: 'Incorrect email or password',
 } as const;
 
 export const AppFeatures = [

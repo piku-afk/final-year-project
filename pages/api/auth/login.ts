@@ -1,10 +1,9 @@
-import { Joi, validate } from 'express-validation';
 import { NextApiRequest, NextApiResponse } from 'next';
 import nc from 'next-connect';
-import { ncOptions } from 'utils/configs';
-import { LocalPassword } from 'utils/middlewares';
-import { JoiValidators } from 'server/utils';
-import { withSessionRoute } from 'utils/configs/ironSession';
+import { ZodValidators } from 'utils';
+import { ncOptions, withSessionRoute } from 'utils/configs';
+import { LocalPassword, zodValidate } from 'utils/middlewares';
+import { z } from 'zod';
 
 const handler = nc(ncOptions);
 
@@ -17,16 +16,17 @@ type ExtendedNextApiRequest = NextApiRequest & {
   user: { id: number };
 };
 
-const { email, password } = JoiValidators.user;
-const validateBody = {
-  body: Joi.object({
+const { email, password } = ZodValidators;
+
+const dataSchema = z.object({
+  body: z.object({
     email,
     password,
   }),
-};
+});
 
 handler
-  .use(validate(validateBody))
+  .use(zodValidate(dataSchema))
   .use(LocalPassword.initialize())
   .use(LocalPassword.authenticate('local', { session: false }))
   .post(async (req: ExtendedNextApiRequest, res: NextApiResponse) => {

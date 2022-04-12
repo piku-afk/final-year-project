@@ -26,7 +26,7 @@ model Election {
   createdBy   User      @relation(fields: [userId], references: [id])
   userId      Int
   createdAt   DateTime  @default(now())
-  start       DateTime  @default(now())
+  start       DateTime?
   end         DateTime?
   status      Status    @default(DRAFT)
 }

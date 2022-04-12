@@ -1,31 +1,52 @@
-import {
-  Box,
-  Button,
-  Card,
-  Container,
-  Grid,
-  Group,
-  Highlight,
-  Paper,
-  Text,
-  Title,
-} from '@mantine/core';
-import { ElectionCard } from 'components/Dashboard/ElectionCard';
-import { Filter } from 'components/Dashboard/Filter';
-import { NewElection } from 'components/Dashboard/NewElection';
-import { Footer } from 'layouts/Footer';
-import { Header } from 'layouts/Header';
-import { GetServerSideProps, NextPage } from 'next';
+import { Box, Button, Container, Group, Title } from '@mantine/core';
+import { ElectionCard, Filter, NewElection } from 'components/Dashboard';
+import { CardContainer } from 'components/Dashboard/CardContainer';
+import { useElections } from 'hooks/fetchers';
+import { Footer, Header } from 'layouts';
+import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
+import { prisma } from 'prisma/prisma';
 import { useState } from 'react';
+import useSWR from 'swr';
+import { withSessionSsr } from 'utils/configs';
 
-// export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps: GetServerSideProps = withSessionSsr(
+  async (context: GetServerSidePropsContext) => {
+    const { req } = context;
+    // @ts-ignore
+    const { user } = req.session as { user: { id: number } };
+    const redirectToLogin = {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    };
 
-//   return { props: {} };
-// };
+    if (!user || !user.id) {
+      return redirectToLogin;
+    }
+
+    if (user) {
+      const { id } = user;
+      const savedUser = await prisma.user.findFirst({ where: { id } });
+      if (!savedUser) {
+        return redirectToLogin;
+      }
+    }
+    return {
+      props: {},
+    };
+  }
+);
 
 const DashBoard: NextPage = () => {
   const [newElection, setNewElection] = useState(false);
+
+  const {
+    data: elections = [],
+    isValidating,
+    error,
+  } = useSWR('/api/election', useElections);
 
   return (
     <Header>
@@ -33,7 +54,7 @@ const DashBoard: NextPage = () => {
         <Head>
           <title>Dashboard</title>
         </Head>
-        <Container size='xl' py={32}>
+        <Container size='xl' py={32} style={{ minHeight: '80vh' }}>
           <Group className='justify-content-between'>
             <Title style={{ fontWeight: 600 }}>Dashboard</Title>
             <Button
@@ -43,12 +64,8 @@ const DashBoard: NextPage = () => {
               Create New Election
             </Button>
           </Group>
-          <Filter />
-          <Box mt={32}>
-            {Array.from(Array(5).keys()).map((item) => (
-              <ElectionCard key={item} />
-            ))}
-          </Box>
+          <Filter loading={isValidating} />
+          <CardContainer elections={elections} loading={isValidating} />
           <NewElection
             open={newElection}
             onClose={() => setNewElection(false)}

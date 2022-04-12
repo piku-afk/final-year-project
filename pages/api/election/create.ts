@@ -1,47 +1,59 @@
-import { Joi, validate } from 'express-validation';
 import { NextApiRequest, NextApiResponse } from 'next';
 import nc from 'next-connect';
 import { prisma } from 'prisma/prisma';
-import { ncOptions } from 'utils/configs';
-import { JoiValidators } from 'server/utils';
+import { ZodValidators } from 'utils';
+import { ncOptions, withSessionRoute } from 'utils/configs';
+import { zodValidate } from 'utils/middlewares';
+import { z } from 'zod';
 
 const handler = nc(ncOptions);
 
-interface ExtendedNextApiRequest extends NextApiRequest {
+type ExtendedNextApiRequest = NextApiRequest & {
   body: {
     title: string;
     description?: string;
     start?: string;
     end?: string;
   };
-  user: any;
-}
-
-const { title, description, start, end } = JoiValidators.election;
-const validateBody = {
-  body: Joi.object({
-    description,
-    end,
-    start,
-    title,
-  }),
+  session: {
+    user: { id: number };
+  };
 };
 
-handler
-  .use(validate(validateBody))
-  .post(async (req: ExtendedNextApiRequest, res: NextApiResponse) => {
-    const { id: userId } = req.user;
-    try {
-      const { id: electionId } = await prisma.election.create({
-        data: { ...req.body, createdBy: userId },
-      });
+const { title, description, start, end } = ZodValidators;
+const dataSchema = z.object({
+  body: z.object({
+    description: description.optional(),
+    end: end.optional(),
+    start: start.optional(),
+    title,
+  }),
+});
 
-      return res.json({ message: 'success', id: electionId });
+handler
+  .use(zodValidate(dataSchema))
+  .post(async (req: ExtendedNextApiRequest, res: NextApiResponse) => {
+    const { id: userId } = req.session.user;
+    // console.log(req.session.user);
+    try {
+      const user = await prisma.user.findFirst({
+        where: { id: userId },
+        select: { id: true },
+      });
+      if (user) {
+        const { id: electionId } = await prisma.election.create({
+          data: { ...req.body, createdBy: { connect: user } },
+        });
+        return res.json({ message: 'success', id: electionId });
+      } else {
+        throw Error(`No user found for the id ${userId}`);
+      }
       // res.send({ name: 'hello' })/;
     } catch (error) {
-      // console.log(error);
+      console.log(error);
+      res.statusCode = 500;
       return res.json({ message: 'failure' });
     }
   });
 
-export default handler;
+export default withSessionRoute(handler);

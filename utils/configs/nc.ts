@@ -1,11 +1,11 @@
-import { ValidationError } from 'express-validation';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { Options } from 'next-connect';
+import { ZodError } from 'zod';
 
 export const ncOptions: Options<NextApiRequest, NextApiResponse> = {
   onError: (err, req, res, next) => {
     console.error(err.stack);
-    if (err instanceof ValidationError) {
+    if (err instanceof ZodError) {
       // for Join validation errors
       res.statusCode = 400;
       return res.json(err);

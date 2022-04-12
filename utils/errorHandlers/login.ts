@@ -1,45 +1,31 @@
 import { NotificationProps } from '@mantine/notifications';
-
-interface Error {
-  response: {
-    data: { details: { body: [{ message: string }] }; message: string };
-    status: 400 | 401;
-  };
-}
+import { ZodError } from 'zod';
+import { AxiosError } from 'axios';
+import { Errors } from 'utils/constants';
 
 interface loginErrorHandlerParameters {
-  error: Error;
+  error: AxiosError;
   notificationObject?: NotificationProps;
   callback?: (message?: any) => void;
 }
 
 export const loginErrorHandler = (parameters: loginErrorHandlerParameters) => {
   const { error, callback } = parameters;
-
-  const {
-    response: {
-      data: { details, message },
-      status,
-    },
-  } = error;
+  const { response } = error;
+  const { data, status } = response || {};
+  console.log(data);
 
   switch (status) {
     case 400:
-      const { body = [] } = details || {};
-      let errorMessage = '';
-      if (body.length > 0) {
-        const { message = '' } = body[0] || {};
-        errorMessage = message;
-      } else if (message) {
-        errorMessage = message;
-      }
-      if (errorMessage && callback) {
-        callback(errorMessage);
+      const { issues = [] } = data || {};
+      const { message = '' } = (issues[0] as { message: string }) || {};
+      if (callback && message) {
+        callback(message);
       }
       break;
     case 401:
       if (callback) {
-        callback();
+        callback(Errors.unauthorized);
       }
       break;
   }

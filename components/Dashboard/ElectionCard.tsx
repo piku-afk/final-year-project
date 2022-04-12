@@ -1,21 +1,35 @@
 import { Card, Grid, Paper, Text } from '@mantine/core';
+import { Election } from '@prisma/client';
 import { FC } from 'react';
+import dayjs from 'dayjs';
 
-export const ElectionCard: FC = () => {
+interface ElectionCardProps {
+  election: Election;
+}
+
+const formatDate = (date: Date | null) =>
+  date ? dayjs(date).format('DD/MM/YYYY') : '';
+
+export const ElectionCard: FC<ElectionCardProps> = (props) => {
+  const { election } = props;
+  const { title, description, start, end, status } = election;
+
   return (
     <Card component={Paper} withBorder mb={16}>
       <Grid>
         <Grid.Col xs={9}>
           <Text weight={600} size='md'>
-            Election Name
+            {title}
           </Text>
-          <Text>Lorem ipsum dolor sit amet.</Text>
+          <Text>{description}</Text>
         </Grid.Col>
         <Grid.Col xs={2}>
           <Text weight={600} size='md'>
             Duration
           </Text>
-          <Text>09/04/2022 - 10/04/2022</Text>
+          <Text>
+            {formatDate(start)} {end && '-'} {formatDate(end)}
+          </Text>
         </Grid.Col>
         <Grid.Col xs={1} style={{ textAlign: 'right' }}>
           <Text
@@ -30,7 +44,7 @@ export const ElectionCard: FC = () => {
             })}
             px={8}
             py={4}>
-            Draft
+            {status}
           </Text>
         </Grid.Col>
       </Grid>
