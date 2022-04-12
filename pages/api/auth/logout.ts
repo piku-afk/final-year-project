@@ -5,7 +5,7 @@ const handler = nc(ncOptions);
 
 handler.get(async (req: ExtendedNextApiRequest, res) => {
   req.session.destroy();
-  res.json({ message: 'success' });
+  res.redirect('/login');
 });
 
 export default withSessionRoute(handler);

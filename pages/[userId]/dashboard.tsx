@@ -6,7 +6,7 @@ import { Footer, Header } from 'layouts';
 import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
 import Head from 'next/head';
 import { prisma } from 'prisma/prisma';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import useSWR from 'swr';
 import { withSessionSsr } from 'utils/configs';
 
@@ -41,20 +41,23 @@ export const getServerSideProps: GetServerSideProps = withSessionSsr(
 
 const DashBoard: NextPage = () => {
   const [newElection, setNewElection] = useState(false);
+  const headerRef = useRef<HTMLDivElement>(null);
 
   const {
     data: elections = [],
     isValidating,
     error,
-  } = useSWR('/api/election', useElections);
+  } = useSWR('/api/election', useElections, {
+    focusThrottleInterval: 60 * 1000,
+  });
 
   return (
-    <Header>
+    <Header headerRef={headerRef}>
       <Footer>
         <Head>
           <title>Dashboard</title>
         </Head>
-        <Container size='xl' py={32} style={{ minHeight: '80vh' }}>
+        <Container size='xl' py={32} style={{ minHeight: '80vh' }} mt={84}>
           <Group className='justify-content-between'>
             <Title style={{ fontWeight: 600 }}>Dashboard</Title>
             <Button

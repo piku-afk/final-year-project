@@ -23,9 +23,9 @@ type ExtendedNextApiRequest = NextApiRequest & {
 const { title, description, start, end } = ZodValidators;
 const dataSchema = z.object({
   body: z.object({
-    description: description.optional(),
-    end: end.optional(),
-    start: start.optional(),
+    description: description.nullable().optional(),
+    end: end.nullable().optional(),
+    start: start.nullable().optional(),
     title,
   }),
 });
