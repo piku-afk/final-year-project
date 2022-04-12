@@ -14,9 +14,23 @@ import 'styles/globals.css';
 
 import { GlobalStore } from 'context/GlobalStore';
 import { MantineProvider } from 'components/MantineProvider';
+import { NextPage, NextPageWithLayout } from 'next';
+import { ReactElement, ReactNode } from 'react';
 
-export default function App(props: AppProps) {
+type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout;
+};
+
+declare module 'next' {
+  type NextPageWithLayout = NextPage & {
+    getLayout?: (page: ReactElement) => ReactNode;
+  };
+}
+
+export default function App(props: AppPropsWithLayout) {
   const { Component, pageProps } = props;
+
+  const getLayout = Component.getLayout ?? ((page) => page);
 
   return (
     <>
@@ -30,7 +44,7 @@ export default function App(props: AppProps) {
       <GlobalStore>
         <MantineProvider>
           <NotificationsProvider>
-            <Component {...pageProps} />
+            {getLayout(<Component {...pageProps} />)}
           </NotificationsProvider>
         </MantineProvider>
       </GlobalStore>

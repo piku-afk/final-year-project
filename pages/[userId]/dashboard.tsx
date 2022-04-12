@@ -1,9 +1,13 @@
-import { Box, Button, Container, Group, Title } from '@mantine/core';
-import { ElectionCard, Filter, NewElection } from 'components/Dashboard';
+import { Button, Container, Divider, Group, Title } from '@mantine/core';
+import { Filter, NewElection } from 'components/Dashboard';
 import { CardContainer } from 'components/Dashboard/CardContainer';
 import { useElections } from 'hooks/fetchers';
-import { Footer, Header } from 'layouts';
-import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
+import { withDefaultLayout } from 'layouts';
+import {
+  GetServerSideProps,
+  GetServerSidePropsContext,
+  NextPageWithLayout,
+} from 'next';
 import Head from 'next/head';
 import { prisma } from 'prisma/prisma';
 import { useRef, useState } from 'react';
@@ -39,7 +43,7 @@ export const getServerSideProps: GetServerSideProps = withSessionSsr(
   }
 );
 
-const DashBoard: NextPage = () => {
+const DashBoard: NextPageWithLayout = () => {
   const [newElection, setNewElection] = useState(false);
   const headerRef = useRef<HTMLDivElement>(null);
 
@@ -51,32 +55,30 @@ const DashBoard: NextPage = () => {
     focusThrottleInterval: 60 * 1000,
   });
 
+  // console.log(headerRef.current?.clientHeight);
+
   return (
-    <Header headerRef={headerRef}>
-      <Footer>
-        <Head>
-          <title>Dashboard</title>
-        </Head>
-        <Container size='xl' py={32} style={{ minHeight: '80vh' }} mt={84}>
-          <Group className='justify-content-between'>
-            <Title style={{ fontWeight: 600 }}>Dashboard</Title>
-            <Button
-              color='cyan'
-              variant='light'
-              onClick={() => setNewElection(true)}>
-              Create New Election
-            </Button>
-          </Group>
-          <Filter loading={isValidating} />
-          <CardContainer elections={elections} loading={isValidating} />
-          <NewElection
-            open={newElection}
-            onClose={() => setNewElection(false)}
-          />
-        </Container>
-      </Footer>
-    </Header>
+    <>
+      <Head>
+        <title>Dashboard</title>
+      </Head>
+
+      <Group mb={32} className='justify-content-between'>
+        <Title style={{ fontWeight: 600 }}>Dashboard</Title>
+        <Button
+          color='cyan'
+          variant='light'
+          onClick={() => setNewElection(true)}>
+          Create New Election
+        </Button>
+      </Group>
+      <Filter loading={isValidating} />
+      <CardContainer elections={elections} loading={isValidating} />
+      <NewElection open={newElection} onClose={() => setNewElection(false)} />
+    </>
   );
 };
+
+DashBoard.getLayout = withDefaultLayout;
 
 export default DashBoard;

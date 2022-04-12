@@ -7,6 +7,7 @@ import {
 import { Constants } from 'utils/constants';
 import { useMediaQuery } from 'hooks';
 import { FC } from 'react';
+import { CustomContainer } from 'components/CustomizeMantine';
 
 interface FooterProps {
   background?: 'white' | 'transparent';
@@ -14,7 +15,6 @@ interface FooterProps {
 
 export const Footer: FC<FooterProps> = (props) => {
   const { background = 'white', children } = props;
-  const { isSmall, isLarge } = useMediaQuery();
 
   return (
     <>
@@ -26,7 +26,7 @@ export const Footer: FC<FooterProps> = (props) => {
           backgroundColor: background || 'transparent',
           color: background === 'white' ? 'inherit' : theme.colors.gray[2],
         })}>
-        <Container size={isSmall ? 'sm' : isLarge ? 'md' : 'xl'}>
+        <CustomContainer>
           <Text size='sm' component='p' mb={0}>
             {Constants.projectName} is a final year project made by the
             8th-semester students of{' '}
@@ -59,7 +59,7 @@ export const Footer: FC<FooterProps> = (props) => {
             </Anchor>{' '}
             , Belgaum during the academic year 2021-2022.{' '}
           </Text>
-        </Container>
+        </CustomContainer>
       </MantineFooter>
     </>
   );

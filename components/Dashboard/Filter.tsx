@@ -12,7 +12,7 @@ export const Filter: FC<Filter> = (props) => {
   const { isExtraSmall } = useMediaQuery();
 
   return (
-    <Box mt={32}>
+    <Box>
       <Grid justify='space-between'>
         <Grid.Col xs={4} span={7}>
           <TextInput

@@ -1,12 +1,14 @@
 import { Box, Card, Paper, Skeleton } from '@mantine/core';
 import { Election } from '@prisma/client';
 import { FC } from 'react';
-import { ElectionCard } from './ElectionCard';
+import { ElectionCard, ElectionCardSkeleton } from './ElectionCard';
 
 interface CardContainerProps {
   elections: Election[];
   loading: boolean;
 }
+
+const numOfSkeletons = 5;
 
 export const CardContainer: FC<CardContainerProps> = (props) => {
   const { elections = [], loading } = props;
@@ -15,10 +17,9 @@ export const CardContainer: FC<CardContainerProps> = (props) => {
     <Box mt={32}>
       {loading ? (
         <>
-          <Skeleton visible={true} height={80} mb={16} />
-          <Skeleton visible={true} height={80} mb={16} />
-          <Skeleton visible={true} height={80} mb={16} />
-          <Skeleton visible={true} height={80} mb={16} />
+          {Array.from(Array(numOfSkeletons).keys()).map((item) => (
+            <ElectionCardSkeleton key={item} />
+          ))}
         </>
       ) : (
         elections.map((item) => <ElectionCard key={item.id} election={item} />)

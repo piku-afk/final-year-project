@@ -1,4 +1,4 @@
-import { Card, Center, Grid, Paper, Text } from '@mantine/core';
+import { Card, Center, Grid, Paper, Skeleton, Text } from '@mantine/core';
 import { Election } from '@prisma/client';
 import { FC } from 'react';
 import dayjs from 'dayjs';
@@ -64,6 +64,26 @@ export const ElectionCard: FC<ElectionCardProps> = (props) => {
             py={4}>
             {status}
           </Text>
+        </Grid.Col>
+      </Grid>
+    </Card>
+  );
+};
+
+export const ElectionCardSkeleton = () => {
+  return (
+    <Card withBorder mb={16}>
+      <Grid justify='space-between'>
+        <Grid.Col xs={9}>
+          <Skeleton height={14} visible={true} width={200} mb={8} />
+          <Skeleton height={12} visible={true} />
+        </Grid.Col>
+        <Grid.Col xs={2} span={9}>
+          <Skeleton height={12} visible={true} width={100} mb={8} />
+          <Skeleton height={12} visible={true} />
+        </Grid.Col>
+        <Grid.Col xs={1} span={3}>
+          <Skeleton height={12} visible={true} width={50} mb={8} ml='auto' />
         </Grid.Col>
       </Grid>
     </Card>
