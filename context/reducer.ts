@@ -14,7 +14,7 @@ export enum ActionTypes {
 export type ActionInterface =
   | {
       type: ActionTypes.setAccount;
-      payload: string;
+      payload: { number: string; balance: string };
     }
   | {
       type: ActionTypes.setCurrentUser;
@@ -41,14 +41,19 @@ export const reducer = (
   switch (type) {
     case ActionTypes.setAccount:
       return { ...state, account: action.payload };
+
     case ActionTypes.setCurrentUser:
       return { ...state, currentUser: action.payload };
+
     case ActionTypes.setEthersProvider:
       return { ...state, ethersProvider: action.payload };
+
     case ActionTypes.setIsInitializing:
       return { ...state, isInitializing: action.payload };
+
     case ActionTypes.setLoading:
       return { ...state, loading: action.payload };
+
     default:
       return state;
   }

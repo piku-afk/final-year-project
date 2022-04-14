@@ -70,10 +70,7 @@ const Security: NextPageWithLayout = () => {
 
   return (
     <Grid gutter={isExtraSmall ? undefined : 'xl'}>
-      <Grid.Col
-        // @ts-ignore
-        lg={5}
-        sm={6}>
+      <Grid.Col lg={5} sm={6}>
         <Card>
           <Text component='h2' style={{ fontSize: 24 }}>
             Security
@@ -155,7 +152,7 @@ const Security: NextPageWithLayout = () => {
               src={SecuritySvg.src}
               width={400}
               height={280}
-              alt='profile'
+              alt='security'
             />
           </Center>
         </Grid.Col>

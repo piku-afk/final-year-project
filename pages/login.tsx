@@ -1,11 +1,9 @@
-import { NextPage } from 'next';
 import {
   ActionIcon,
   Alert,
   Button,
   Collapse,
   Grid,
-  Group,
   PasswordInput,
   Text,
   TextInput,
@@ -13,16 +11,18 @@ import {
 import { useForm } from '@mantine/form';
 import { NotificationProps, showNotification } from '@mantine/notifications';
 import axios from 'axios';
+import { LoginLayout } from 'layouts/Login';
+import { NextPage } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { LoginLayout } from 'layouts/Login';
 import SecureLogin from 'public/images/secure_files_re_6vdh.svg';
 import { useState } from 'react';
+import { mutate } from 'swr';
 import { Check, X, Mail, Lock, AlertCircle } from 'tabler-icons-react';
+import { ApiEndpoints } from 'utils/constants';
+import { loginErrorHandler } from 'utils/errorHandlers';
 import { ValidationMessages } from 'utils/validationMessages';
-import { loginErrorHandler } from 'utils/errorHandlers/login';
-import { Constants } from 'utils/constants';
 
 interface FormInterface {
   email: string;
@@ -61,6 +61,7 @@ const Login: NextPage = () => {
       const { message, userId } = data;
       if (message === 'success') {
         push(`/${userId}/dashboard`);
+        mutate(ApiEndpoints.user);
       }
       showNotification(notificationObject);
     } catch (error: any) {

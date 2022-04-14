@@ -9,8 +9,17 @@ const handler = nc(ncOptions);
 handler.use(isAuthenticated);
 
 handler.get(async (req: ExtendedNextApiRequest, res) => {
-  // isAuthenticated(req, res);
-  const elections = await prisma.election.findMany();
+  const { query } = req;
+  const { search } = query as { search: string };
+  const elections = await prisma.election.findMany({
+    where: {
+      title: {
+        contains: search || '',
+        mode: 'insensitive',
+      },
+    },
+    orderBy: { id: 'desc' },
+  });
   res.json(elections);
 });
 

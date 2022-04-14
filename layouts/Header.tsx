@@ -11,6 +11,7 @@ import { Constants } from 'utils/constants';
 import {
   Dispatch,
   FC,
+  MutableRefObject,
   SetStateAction,
   useCallback,
   useEffect,
@@ -33,12 +34,11 @@ import { useGlobalStore } from 'context/GlobalStore';
 import { ActionTypes } from 'context/reducer';
 
 interface Header {
-  headerRef: HTMLElement | undefined;
-  setHeaderRef: Dispatch<SetStateAction<HTMLElement | undefined>>;
+  headerRef: MutableRefObject<HTMLElement>;
 }
 
 export const Header: FC<Header> = (props) => {
-  const { children, headerRef, setHeaderRef } = props;
+  const { children, headerRef } = props;
   const { push, pathname, ...router } = useRouter();
   const [showShadow, setShowShadow] = useState(false);
   const { isExtraSmall } = useMediaQuery();
@@ -95,7 +95,7 @@ export const Header: FC<Header> = (props) => {
       <MantineHeader
         // @ts-ignore
         component={Paper}
-        ref={(ref) => ref && setHeaderRef(ref)}
+        ref={headerRef}
         shadow={showShadow ? 'sm' : undefined}
         radius={0}
         fixed
@@ -105,10 +105,7 @@ export const Header: FC<Header> = (props) => {
           background: '#f8fafc',
           transition: 'box-shadow 0.1s ease-out',
         }}>
-        <CustomContainer
-          className='w-100 d-flex justify-content-between align-items-center border-bottom-0'
-          // style={{  }}
-        >
+        <CustomContainer className='w-100 d-flex justify-content-between align-items-center border-bottom-0'>
           <Title
             // @ts-ignore
             component={NextLink}

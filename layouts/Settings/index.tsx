@@ -14,7 +14,7 @@ import { useMediaQuery } from 'hooks';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { FC, ReactElement, ReactNode, useMemo } from 'react';
-import { ChevronLeft, Settings, ShieldLock } from 'tabler-icons-react';
+import { ChevronLeft, Settings, ShieldLock, Wallet } from 'tabler-icons-react';
 import { withDefaultLayout } from '../Default';
 
 interface SideButton {
@@ -34,13 +34,11 @@ const SideButton: FC<SideButton> = (props) => {
 
   const selected = useMemo(() => {
     const paths = pathname.split('/') || [''];
-    const tab = 'general';
+    // const tab = 'general';
+    const tab = paths[paths.length - 1];
     if (!tab) return false;
 
     if (paths.length === 4) {
-      console.log('paths', paths);
-      // const tab = paths.at(-1);
-
       return tab.toLowerCase() === label.toLowerCase();
     } else if (paths.length === 3) {
       return label.toLowerCase() === 'general';
@@ -56,7 +54,7 @@ const SideButton: FC<SideButton> = (props) => {
         variant: 'subtle',
       }
     : {
-        variant: 'light',
+        variant: selected ? 'outline' : 'light',
         color: selected ? 'cyan' : 'gray',
       };
   return (
@@ -75,6 +73,7 @@ const SideButton: FC<SideButton> = (props) => {
           '&:active': { transform: 'translateY(0) !important' },
           fontSize: 16,
           alignItems: 'center',
+          // border: '1px solid red',
           '&:hover': { color: selected ? '#15AABF' : '#868E96' },
         },
         inner: {
@@ -91,6 +90,7 @@ export const SideNavigation = () => {
   return (
     <Stack spacing={0}>
       <SideButton leftIcon={<Settings size={20} />} label='General' />
+      <SideButton leftIcon={<Wallet size={20} />} label='MetaMask' />
       <SideButton leftIcon={<ShieldLock size={20} />} label='Security' />
     </Stack>
   );

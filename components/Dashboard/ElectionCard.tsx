@@ -3,13 +3,17 @@ import { Election } from '@prisma/client';
 import { FC } from 'react';
 import dayjs from 'dayjs';
 import { useMediaQuery } from 'hooks';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
+
+dayjs.extend(localizedFormat);
 
 interface ElectionCardProps {
   election: Election;
 }
 
-const formatDate = (date: Date | null) =>
-  date ? dayjs(date).format('DD/MM/YYYY') : '';
+const formatDate2 = (date: Date | null) => {
+  return date ? dayjs(date).format('LL') : '';
+};
 
 export const ElectionCard: FC<ElectionCardProps> = (props) => {
   const { election } = props;
@@ -17,9 +21,14 @@ export const ElectionCard: FC<ElectionCardProps> = (props) => {
   const { isExtraSmall } = useMediaQuery();
 
   return (
-    <Card withBorder mb={16}>
+    <Card
+      // component={NextLink}
+      // href='/'
+      style={{ color: 'initial' }}
+      withBorder
+      mb={16}>
       <Grid justify='space-between'>
-        <Grid.Col xs={9}>
+        <Grid.Col lg={8.5} sm={7} xs={6}>
           <Text weight={600} size='lg'>
             {title}
           </Text>
@@ -27,14 +36,17 @@ export const ElectionCard: FC<ElectionCardProps> = (props) => {
             {description}
           </Text>
         </Grid.Col>
-        <Grid.Col xs={2} span={9}>
+        <Grid.Col lg={2.5} sm={3.5} xs={4.5} span={9}>
           {start ? (
             <>
               <Text weight={600} size='md'>
                 Duration
               </Text>
               <Text>
-                {formatDate(start)} {end && '-'} {formatDate(end)}
+                {!end
+                  ? `Starts from ${formatDate2(start)}`
+                  : formatDate2(start)}{' '}
+                {end && '-'} {formatDate2(end)}
               </Text>
             </>
           ) : (
@@ -46,7 +58,9 @@ export const ElectionCard: FC<ElectionCardProps> = (props) => {
           )}
         </Grid.Col>
         <Grid.Col
-          xs={1}
+          lg={1}
+          sm={1.5}
+          xs={1.5}
           span={3}
           style={{ textAlign: 'right', marginTop: isExtraSmall ? 'auto' : 0 }}>
           <Text

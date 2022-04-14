@@ -1,14 +1,17 @@
 import { Box, Grid, Select, TextInput, useMantineTheme } from '@mantine/core';
+import { useFocusTrap } from '@mantine/hooks';
 import { useMediaQuery } from 'hooks';
-import { FC } from 'react';
+import { Dispatch, FC, SetStateAction, useEffect, useRef } from 'react';
 import { Search } from 'tabler-icons-react';
 
 interface Filter {
   loading: boolean;
+  search: string;
+  setSearch: Dispatch<SetStateAction<string>>;
 }
 
 export const Filter: FC<Filter> = (props) => {
-  const { loading } = props;
+  const { loading, search, setSearch } = props;
   const { isExtraSmall } = useMediaQuery();
 
   return (
@@ -19,7 +22,9 @@ export const Filter: FC<Filter> = (props) => {
             size='md'
             disabled={loading}
             icon={<Search size={20} strokeWidth={1.5} />}
-            placeholder='Search by election title'
+            placeholder={isExtraSmall ? 'Search' : 'Search by election title'}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
           />
         </Grid.Col>
         <Grid.Col xs={2} span={5}>
