@@ -11,12 +11,13 @@ datasource db {
 }
 
 model User {
-  id        Int        @id @default(autoincrement())
-  createdAt DateTime   @default(now())
-  email     String     @unique
-  name      String
-  password  String
-  Election  Election[]
+  id           Int        @id @default(autoincrement())
+  createdAt    DateTime   @default(now())
+  email        String     @unique
+  name         String
+  password     String
+  organization String?
+  Election     Election[]
 }
 
 model Election {

@@ -1,11 +1,3 @@
-// import '../styles/globals.css'
-// import type { AppProps } from 'next/app'
-
-// function MyApp({ Component, pageProps }: AppProps) {
-//   return <Component {...pageProps} />
-// }
-// export default MyApp
-
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -14,16 +6,25 @@ import 'styles/globals.css';
 
 import { GlobalStore } from 'context/GlobalStore';
 import { MantineProvider } from 'components/MantineProvider';
-import { NextPage, NextPageWithLayout } from 'next';
+import { NextApiRequest, NextPage, NextPageWithLayout } from 'next';
 import { ReactElement, ReactNode } from 'react';
 
 type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;
 };
 
+declare module 'iron-session' {
+  interface IronSessionData {
+    user: { id: number };
+  }
+}
+
 declare module 'next' {
   type NextPageWithLayout = NextPage & {
     getLayout?: (page: ReactElement) => ReactNode;
+  };
+  type ExtendedNextApiRequest = NextApiRequest & {
+    user: { id: number };
   };
 }
 

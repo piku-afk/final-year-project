@@ -20,6 +20,7 @@ export enum Constants {
 }
 
 export const Errors = {
+  default: 'Something went wrong. Please try again.',
   failedLogin: {
     code: '002',
     message:

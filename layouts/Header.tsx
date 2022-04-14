@@ -1,24 +1,21 @@
 import {
   Button,
-  Container,
+  Center,
   Header as MantineHeader,
+  Loader,
   Menu,
   Paper,
   Title,
 } from '@mantine/core';
 import { Constants } from 'utils/constants';
-import Link from 'next/link';
 import {
   Dispatch,
   FC,
-  RefObject,
   SetStateAction,
   useCallback,
   useEffect,
   useState,
 } from 'react';
-import useSWR from 'swr';
-import { useUser } from 'hooks/fetchers';
 import {
   ChevronDown,
   ListDetails,
@@ -32,6 +29,8 @@ import { showNotification } from '@mantine/notifications';
 import { useMediaQuery } from 'hooks';
 import { NextLink } from '@mantine/next';
 import { CustomContainer } from 'components/CustomizeMantine';
+import { useGlobalStore } from 'context/GlobalStore';
+import { ActionTypes } from 'context/reducer';
 
 interface Header {
   headerRef: HTMLElement | undefined;
@@ -40,12 +39,15 @@ interface Header {
 
 export const Header: FC<Header> = (props) => {
   const { children, headerRef, setHeaderRef } = props;
-  const { data, error, isValidating } = useSWR('/api/auth/user', useUser);
-  const { push, pathname } = useRouter();
+  const { push, pathname, ...router } = useRouter();
   const [showShadow, setShowShadow] = useState(false);
   const { isExtraSmall } = useMediaQuery();
+  const {
+    state: { loading, currentUser, isInitializing },
+    dispatch,
+  } = useGlobalStore();
 
-  const { name, id } = data || {};
+  const { name, id } = currentUser;
 
   const handleLogout = async () => {
     console.log('logout');
@@ -70,6 +72,23 @@ export const Header: FC<Header> = (props) => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, [handleScroll]);
+
+  useEffect(() => {
+    const handleStart = () =>
+      dispatch({ type: ActionTypes.setLoading, payload: true });
+    const handleComplete = () =>
+      dispatch({ type: ActionTypes.setLoading, payload: false });
+
+    router.events.on('routeChangeStart', handleStart);
+    router.events.on('routeChangeComplete', handleComplete);
+    router.events.on('routeChangeError', handleComplete);
+
+    return () => {
+      router.events.off('routeChangeStart', handleStart);
+      router.events.off('routeChangeComplete', handleComplete);
+      router.events.off('routeChangeError', handleComplete);
+    };
+  }, [dispatch, router]);
 
   return (
     <>
@@ -96,7 +115,7 @@ export const Header: FC<Header> = (props) => {
             href='/'
             order={3}
             className='hero-background'>
-            {Constants.projectName}
+            {Constants.projectName} (beta)
           </Title>
           <Menu
             size='sm'
@@ -110,7 +129,7 @@ export const Header: FC<Header> = (props) => {
             control={
               <Button
                 px={0}
-                loading={isValidating}
+                loading={isInitializing}
                 size='sm'
                 color='cyan'
                 variant='white'
@@ -120,20 +139,21 @@ export const Header: FC<Header> = (props) => {
                 }}
                 leftIcon={<User size={18} />}
                 rightIcon={<ChevronDown size={14} />}>
-                {!isValidating && !isExtraSmall && name}
+                {!isInitializing && !isExtraSmall && name}
               </Button>
             }>
             <Menu.Item
-              // disabled={pathname.includes('dashboard')}
-              component={NextLink}
-              href={`/${id}/dashboard`}
-              icon={<ListDetails size={14} color='black' />}>
+              {...(pathname.includes('dashboard')
+                ? { disabled: true }
+                : { component: NextLink, href: `/${id}/dashboard` })}
+              icon={<ListDetails size={14} />}>
               Dashboard
             </Menu.Item>
             <Menu.Item
-              component={NextLink}
-              href={`/${id}/settings`}
-              icon={<Settings size={14} color='black' />}>
+              {...(pathname.includes('settings')
+                ? { disabled: true }
+                : { component: NextLink, href: `/${id}/settings` })}
+              icon={<Settings size={14} />}>
               Settings
             </Menu.Item>
             <Menu.Item icon={<Logout size={14} />} onClick={handleLogout}>
@@ -142,7 +162,13 @@ export const Header: FC<Header> = (props) => {
           </Menu>
         </CustomContainer>
       </MantineHeader>
-      {children}
+      {loading ? (
+        <Center style={{ height: '100vh' }}>
+          <Loader color='cyan' />
+        </Center>
+      ) : (
+        children
+      )}
     </>
   );
 };

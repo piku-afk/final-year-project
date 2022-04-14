@@ -1,4 +1,4 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { ExtendedNextApiRequest, NextApiResponse } from 'next';
 import { NextHandler } from 'next-connect';
 
 export const isAuthenticated = async (

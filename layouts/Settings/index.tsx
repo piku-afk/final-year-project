@@ -1,10 +1,6 @@
 import {
-  Accordion,
-  AccordionItem,
   Box,
   Button,
-  Center,
-  Container,
   Divider,
   Grid,
   Stack,
@@ -13,14 +9,13 @@ import {
   UnstyledButton,
 } from '@mantine/core';
 import { NextLink } from '@mantine/next';
+import { useGlobalStore } from 'context/GlobalStore';
 import { useMediaQuery } from 'hooks';
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { FC, ReactElement, ReactNode, useMemo } from 'react';
 import { ChevronLeft, Settings, ShieldLock } from 'tabler-icons-react';
-
-export const withSettingsLayout = (page: ReactElement) => (
-  <SettingsLayout>{page}</SettingsLayout>
-);
+import { withDefaultLayout } from '../Default';
 
 interface SideButton {
   leftIcon: ReactNode;
@@ -29,14 +24,29 @@ interface SideButton {
 
 const SideButton: FC<SideButton> = (props) => {
   const { leftIcon, label } = props;
-  const { query } = useRouter();
-  const { tab, userId } = query as { tab: string; userId: string };
+  const {
+    state: {
+      currentUser: { id },
+    },
+  } = useGlobalStore();
+  const { pathname } = useRouter();
   const { isExtraSmall } = useMediaQuery();
 
   const selected = useMemo(() => {
-    if (!tab) return label.toLowerCase() === 'general';
-    return tab.toLowerCase() === label.toLowerCase();
-  }, [tab, label]);
+    const paths = pathname.split('/') || [''];
+    const tab = 'general';
+    if (!tab) return false;
+
+    if (paths.length === 4) {
+      console.log('paths', paths);
+      // const tab = paths.at(-1);
+
+      return tab.toLowerCase() === label.toLowerCase();
+    } else if (paths.length === 3) {
+      return label.toLowerCase() === 'general';
+    }
+    return false;
+  }, [label, pathname]);
 
   const extraSmallProps = isExtraSmall
     ? {
@@ -53,7 +63,7 @@ const SideButton: FC<SideButton> = (props) => {
     // @ts-ignore
     <Button
       component={NextLink}
-      href={`/${userId}/settings?tab=${label.toLowerCase()}`}
+      href={`/${id}/settings/${label.toLowerCase()}`}
       px={16}
       my={2}
       size={isExtraSmall ? 'xl' : 'sm'}
@@ -78,8 +88,6 @@ const SideButton: FC<SideButton> = (props) => {
 };
 
 export const SideNavigation = () => {
-  const { isExtraSmall } = useMediaQuery();
-
   return (
     <Stack spacing={0}>
       <SideButton leftIcon={<Settings size={20} />} label='General' />
@@ -90,26 +98,43 @@ export const SideNavigation = () => {
 
 const SettingsLayout: FC = (props) => {
   const { children } = props;
+  const {
+    state: {
+      currentUser: { id, name },
+    },
+  } = useGlobalStore();
   const { isExtraSmall } = useMediaQuery();
-  const { query } = useRouter();
-  const { userId, tab } = query;
+  const { pathname } = useRouter();
+
+  const showBackButton = useMemo(() => {
+    if (!isExtraSmall) return false;
+    const paths = pathname.split('/') || [];
+    const notSettings = paths.at(-1)?.toLowerCase() !== 'settings';
+    if (paths.length === 4 && notSettings) {
+      return true;
+    }
+    return false;
+  }, [pathname, isExtraSmall]);
 
   return (
     <>
+      <Head>
+        <title>{name} | Settings</title>
+      </Head>
       <Title style={{ fontWeight: 600 }}>Profile Settings</Title>
-      {!isExtraSmall && <Divider mt={32} mb={32} />}
-      <Grid>
+      {!isExtraSmall && <Divider mt={32} mb={40} />}
+      <Grid gutter={isExtraSmall ? undefined : 'xl'}>
         {!isExtraSmall && (
           <Grid.Col lg={2} sm={3} xs={4} className='border-right'>
             <SideNavigation />
           </Grid.Col>
         )}
-        <Grid.Col lg={10} sm={9} xs={8} my={isExtraSmall && !tab ? 24 : 0}>
-          {isExtraSmall && tab && (
+        <Grid.Col lg={10} sm={9} xs={8} my={isExtraSmall ? 24 : 0}>
+          {showBackButton && (
             <UnstyledButton
               my={24}
               component={NextLink}
-              href={`/${userId}/settings`}
+              href={`/${id}/settings`}
               className='d-flex'
               style={{ display: 'block', fontSize: 18, color: 'black' }}>
               <ThemeIcon color='gray' variant='light' mr={4}>
@@ -118,9 +143,12 @@ const SettingsLayout: FC = (props) => {
               Settings
             </UnstyledButton>
           )}
-          <Box mt={isExtraSmall ? 0 : -16}>{children}</Box>
+          <Box mt={isExtraSmall ? 0 : -24}>{children}</Box>
         </Grid.Col>
       </Grid>
     </>
   );
 };
+
+export const withSettingsLayout = (page: ReactElement) =>
+  withDefaultLayout(<SettingsLayout>{page}</SettingsLayout>);

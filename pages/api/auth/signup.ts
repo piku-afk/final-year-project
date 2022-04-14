@@ -46,7 +46,7 @@ handler
         };
         return res.json(userError);
       }
-      // attaching middleware
+      // attaching middleware for password hashing
       prisma.$use(HashPassword);
       await prisma.user.create({
         data: { email, name, password },

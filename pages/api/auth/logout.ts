@@ -1,3 +1,4 @@
+import { ExtendedNextApiRequest } from 'next';
 import nc from 'next-connect';
 import { ncOptions, withSessionRoute } from 'utils/configs';
 

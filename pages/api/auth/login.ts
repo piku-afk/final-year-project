@@ -1,4 +1,4 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { ExtendedNextApiRequest, NextApiResponse } from 'next';
 import nc from 'next-connect';
 import { ZodValidators } from 'utils';
 import { ncOptions, withSessionRoute } from 'utils/configs';
@@ -6,15 +6,6 @@ import { LocalPassword, zodValidate } from 'utils/middlewares';
 import { z } from 'zod';
 
 const handler = nc(ncOptions);
-
-type ExtendedNextApiRequest = NextApiRequest & {
-  session: {
-    user: {
-      id: number;
-    };
-  };
-  user: { id: number };
-};
 
 const { email, password } = ZodValidators;
 

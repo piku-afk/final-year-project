@@ -7,7 +7,7 @@ import { Calendar, Check, Clock } from 'tabler-icons-react';
 import { showNotification, NotificationProps } from '@mantine/notifications';
 import { User } from '@prisma/client';
 import axios from 'axios';
-import { FormData, useNewElectionForm } from './useNewElectionForm';
+import { useNewElectionForm } from './useNewElectionForm';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { useSWRConfig } from 'swr';
 dayjs.extend(customParseFormat);
@@ -48,7 +48,7 @@ export const NewElection: FC<NewElection> = (props) => {
     form.reset();
   };
 
-  const handleSubmit = async (formData: FormData) => {
+  const handleSubmit = async (formData: typeof form.values) => {
     const { endDate, endTime, startDate, startTime, ...restFormData } =
       formData;
     let start = null;
@@ -62,10 +62,10 @@ export const NewElection: FC<NewElection> = (props) => {
     }
     const body = {
       ...restFormData,
-      start: start?.toDate() || null,
-      end: end?.toDate() || null,
+      ...(start && { start }),
+      ...(end && { end: end.toDate() }),
     };
-    console.log(body);
+
     const notificationObject: NotificationProps = {
       message: 'Something went wrong. New election not created',
       color: 'red',

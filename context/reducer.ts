@@ -1,10 +1,14 @@
 import { ethers } from 'ethers';
-import { initialStateType } from './initialState';
+import { initialState } from './initialState';
+
+type initialStateType = typeof initialState;
 
 export enum ActionTypes {
-  setIsInitializing = 'SET_IS_INITIALIZING',
   setAccount = 'SET_ACCOUNT',
+  setCurrentUser = 'SET_CURRENT_USER',
   setEthersProvider = 'SET_ETHERS_PROVIDER',
+  setIsInitializing = 'SET_IS_INITIALIZING',
+  setLoading = 'SET_LOADING',
 }
 
 export type ActionInterface =
@@ -13,11 +17,19 @@ export type ActionInterface =
       payload: string;
     }
   | {
+      type: ActionTypes.setCurrentUser;
+      payload: typeof initialState.currentUser;
+    }
+  | {
       type: ActionTypes.setEthersProvider;
       payload: ethers.providers.Web3Provider | null;
     }
   | {
       type: ActionTypes.setIsInitializing;
+      payload: boolean;
+    }
+  | {
+      type: ActionTypes.setLoading;
       payload: boolean;
     };
 
@@ -29,10 +41,14 @@ export const reducer = (
   switch (type) {
     case ActionTypes.setAccount:
       return { ...state, account: action.payload };
+    case ActionTypes.setCurrentUser:
+      return { ...state, currentUser: action.payload };
     case ActionTypes.setEthersProvider:
       return { ...state, ethersProvider: action.payload };
     case ActionTypes.setIsInitializing:
       return { ...state, isInitializing: action.payload };
+    case ActionTypes.setLoading:
+      return { ...state, loading: action.payload };
     default:
       return state;
   }

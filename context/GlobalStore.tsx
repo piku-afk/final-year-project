@@ -6,12 +6,14 @@ import {
   useEffect,
   useReducer,
 } from 'react';
-import { initialState, initialStateType } from './initialState';
+import { initialState } from './initialState';
 import { ActionInterface, ActionTypes, reducer } from './reducer';
 import { initEthers } from 'hooks/useEthers';
+import useSWR from 'swr';
+import { useUser } from 'hooks/fetchers';
 
 interface GlobalContextType {
-  state: initialStateType;
+  state: typeof initialState;
   dispatch: Dispatch<ActionInterface>;
 }
 
@@ -25,16 +27,24 @@ export const useGlobalStore = () => useContext(GlobalContext);
 export const GlobalStore: FC = (props) => {
   const { children } = props;
   const [state, dispatch] = useReducer(reducer, initialState);
+  const { data, isValidating } = useSWR('/api/auth/user', useUser);
 
   useEffect(() => {
     const init = async () => {
       const provider = await initEthers();
+      if (!isValidating && data !== undefined) {
+        const { email, id, name, organization } = data;
+        dispatch({
+          type: ActionTypes.setCurrentUser,
+          payload: { email, id, name, organization: organization || '' },
+        });
+      }
 
       dispatch({ type: ActionTypes.setEthersProvider, payload: provider });
       dispatch({ type: ActionTypes.setIsInitializing, payload: false });
     };
     init();
-  }, []);
+  }, [data, isValidating]);
 
   const { ethersProvider } = state;
   useEffect(() => {

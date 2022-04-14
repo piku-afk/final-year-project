@@ -7,7 +7,7 @@
     "build": "npx prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
-    "migrate": "npx prisma generate && npx prisma migrate dev"
+    "migrate": "npx prisma migrate dev && npx prisma generate"
   },
   "dependencies": {
     "@mantine/core": "^4.1.2",

@@ -20,12 +20,16 @@ type ExtendedNextApiRequest = NextApiRequest & {
   };
 };
 
-const { title, description, start, end } = ZodValidators;
+const { title, description, start, end, makeOptionalString } = ZodValidators;
 const dataSchema = z.object({
   body: z.object({
-    description: description.nullable().optional(),
-    end: end.nullable().optional(),
-    start: start.nullable().optional(),
+    description: makeOptionalString(description),
+    end: z.preprocess((arg) => {
+      if (typeof arg == 'string' || arg instanceof Date) return new Date(arg);
+    }, z.date()),
+    start: z.preprocess((arg) => {
+      if (typeof arg == 'string' || arg instanceof Date) return new Date(arg);
+    }, z.date()),
     title,
   }),
 });
@@ -48,7 +52,6 @@ handler
       } else {
         throw Error(`No user found for the id ${userId}`);
       }
-      // res.send({ name: 'hello' })/;
     } catch (error) {
       console.log(error);
       res.statusCode = 500;
