@@ -10,7 +10,7 @@ export const zodValidate =
     next: NextHandler
   ) => {
     try {
-      schema.parseAsync({ body: req.body });
+      await schema.parseAsync({ body: req.body });
       return next();
     } catch (error) {
       return res.status(400).json(error);

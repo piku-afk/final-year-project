@@ -19,7 +19,7 @@ export const useNewElectionForm = () => {
   const form = useForm<FormData>({
     initialValues: {
       title: '',
-      description: null,
+      description: '',
       startTime: null,
       endTime: null,
       startDate: null,

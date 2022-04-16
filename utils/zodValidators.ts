@@ -1,3 +1,4 @@
+import { Status } from '@prisma/client';
 import { z, ZodString } from 'zod';
 
 export const ZodValidators = {
@@ -17,5 +18,6 @@ export const ZodValidators = {
     .string({ required_error: 'Password is required' })
     .min(6, 'Password should be at least 6 characters long'),
   start: z.date(),
+  status: z.nativeEnum(Status),
   title: z.string().min(3),
 };

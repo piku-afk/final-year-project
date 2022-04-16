@@ -1,13 +1,13 @@
+import { ModalsProvider } from '@mantine/modals';
+import { NotificationsProvider } from '@mantine/notifications';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { MantineProvider } from 'components/MantineProvider';
+import { GlobalStore } from 'context/GlobalStore';
+import { NextApiRequest, NextPage, NextPageWithLayout } from 'next';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { NotificationsProvider } from '@mantine/notifications';
-import 'styles/globals.css';
-
-import { GlobalStore } from 'context/GlobalStore';
-import { MantineProvider } from 'components/MantineProvider';
-import { NextApiRequest, NextPage, NextPageWithLayout } from 'next';
 import { ReactElement, ReactNode } from 'react';
+import 'styles/globals.css';
 
 type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;
@@ -44,9 +44,11 @@ export default function App(props: AppPropsWithLayout) {
       </Head>
       <GlobalStore>
         <MantineProvider>
-          <NotificationsProvider>
-            {getLayout(<Component {...pageProps} />)}
-          </NotificationsProvider>
+          <ModalsProvider>
+            <NotificationsProvider>
+              {getLayout(<Component {...pageProps} />)}
+            </NotificationsProvider>
+          </ModalsProvider>
         </MantineProvider>
       </GlobalStore>
     </>

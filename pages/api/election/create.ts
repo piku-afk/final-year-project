@@ -24,12 +24,16 @@ const { title, description, start, end, makeOptionalString } = ZodValidators;
 const dataSchema = z.object({
   body: z.object({
     description: makeOptionalString(description),
-    end: z.preprocess((arg) => {
-      if (typeof arg == 'string' || arg instanceof Date) return new Date(arg);
-    }, z.date()),
-    start: z.preprocess((arg) => {
-      if (typeof arg == 'string' || arg instanceof Date) return new Date(arg);
-    }, z.date()),
+    end: z
+      .preprocess((arg) => {
+        if (typeof arg == 'string' || arg instanceof Date) return new Date(arg);
+      }, z.date())
+      .optional(),
+    start: z
+      .preprocess((arg) => {
+        if (typeof arg == 'string' || arg instanceof Date) return new Date(arg);
+      }, z.date())
+      .optional(),
     title,
   }),
 });

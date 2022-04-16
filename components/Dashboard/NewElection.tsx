@@ -5,15 +5,17 @@ import { FC, useState } from 'react';
 import { Calendar, Check, Clock } from 'tabler-icons-react';
 
 import { showNotification, NotificationProps } from '@mantine/notifications';
-import { User } from '@prisma/client';
+import { Election } from '@prisma/client';
 import axios from 'axios';
 import { useNewElectionForm } from './useNewElectionForm';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import { useSWRConfig } from 'swr';
+import { KeyedMutator } from 'swr';
+import { ApiEndpoints } from 'utils/constants';
+
 dayjs.extend(customParseFormat);
 
 interface NewElection {
-  user?: User;
+  mutate: KeyedMutator<Election[]>;
   open: boolean;
   onClose: () => void;
 }
@@ -38,10 +40,9 @@ const formatDate = (inputDate: Date | null, inputTime: Date | null) => {
 };
 
 export const NewElection: FC<NewElection> = (props) => {
-  const { open, onClose } = props;
+  const { open, onClose, mutate } = props;
   const [loading, setLoading] = useState(false);
   const { form } = useNewElectionForm();
-  const { mutate } = useSWRConfig();
 
   const handleClose = () => {
     onClose();
@@ -73,7 +74,7 @@ export const NewElection: FC<NewElection> = (props) => {
     setLoading(true);
     try {
       const { data } = await axios({
-        url: '/api/election/create',
+        url: `${ApiEndpoints.election}/create`,
         method: 'POST',
         data: body,
       });
@@ -83,8 +84,8 @@ export const NewElection: FC<NewElection> = (props) => {
         notificationObject.message = 'New election successfully created';
         notificationObject.color = 'green';
         notificationObject.icon = <Check />;
+        await mutate();
         handleClose();
-        mutate('/api/election');
       }
     } catch (error) {
       console.log(error);

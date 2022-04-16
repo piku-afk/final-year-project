@@ -6,11 +6,18 @@ interface params {
   search: string;
 }
 
-export const useElections = async (params: params) => {
-  const { url, search } = params;
-  const { data } = (await axios({
-    url,
+export const getAllElections = async (url: string, search: string = '') => {
+  console.log('url', url);
+  if (!url) throw new Error('Url not found');
+  const { data } = (await axios.get(url, {
     params: { search },
-  })) as { data: Election[] };
+  })) as {
+    data: Election[];
+  };
+  return data || [];
+};
+
+export const getElection = async (url: string) => {
+  const { data } = (await axios.get(url)) as { data: Election };
   return data || [];
 };

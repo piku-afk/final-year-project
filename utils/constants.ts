@@ -2,6 +2,7 @@ import { ChartBar, DeviceMobile, Key } from 'tabler-icons-react';
 
 export enum ApiEndpoints {
   user = '/api/auth/user',
+  election = '/api/election',
 }
 
 export enum Constants {

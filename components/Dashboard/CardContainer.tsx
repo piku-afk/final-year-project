@@ -1,9 +1,11 @@
-import { Box, Card, Paper, Skeleton } from '@mantine/core';
+import { Box } from '@mantine/core';
 import { Election } from '@prisma/client';
 import { FC } from 'react';
+import { KeyedMutator } from 'swr';
 import { ElectionCard, ElectionCardSkeleton } from './ElectionCard';
 
 interface CardContainerProps {
+  mutate: KeyedMutator<Election[]>;
   elections: Election[];
   loading: boolean;
 }
@@ -11,7 +13,7 @@ interface CardContainerProps {
 const numOfSkeletons = 5;
 
 export const CardContainer: FC<CardContainerProps> = (props) => {
-  const { elections = [], loading } = props;
+  const { elections = [], loading, mutate } = props;
 
   return (
     <Box mt={32}>
@@ -22,7 +24,9 @@ export const CardContainer: FC<CardContainerProps> = (props) => {
           ))}
         </>
       ) : (
-        elections.map((item) => <ElectionCard key={item.id} election={item} />)
+        elections.map((item) => (
+          <ElectionCard key={item.id} election={item} mutate={mutate} />
+        ))
       )}
     </Box>
   );

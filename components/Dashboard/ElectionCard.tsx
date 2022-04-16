@@ -1,14 +1,27 @@
-import { Card, Center, Grid, Paper, Skeleton, Text } from '@mantine/core';
+import {
+  ActionIcon,
+  Card,
+  Center,
+  Grid,
+  Paper,
+  Skeleton,
+  Text,
+  Tooltip,
+} from '@mantine/core';
 import { Election } from '@prisma/client';
 import { FC } from 'react';
 import dayjs from 'dayjs';
-import { useMediaQuery } from 'hooks';
+import { useDeleteElection, useMediaQuery } from 'hooks';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
+import { NextLink } from '@mantine/next';
+import { Trash } from 'tabler-icons-react';
+import { KeyedMutator } from 'swr';
 
 dayjs.extend(localizedFormat);
 
 interface ElectionCardProps {
   election: Election;
+  mutate: KeyedMutator<Election[]>;
 }
 
 const formatDate2 = (date: Date | null) => {
@@ -16,33 +29,45 @@ const formatDate2 = (date: Date | null) => {
 };
 
 export const ElectionCard: FC<ElectionCardProps> = (props) => {
-  const { election } = props;
-  const { title, description, start, end, status } = election;
+  const { election, mutate } = props;
+  const { id, title, description, start, end, status } = election;
   const { isExtraSmall } = useMediaQuery();
+  const handleDelete = useDeleteElection(id, title);
 
   return (
-    <Card
-      // component={NextLink}
-      // href='/'
-      style={{ color: 'initial' }}
-      withBorder
-      mb={16}>
-      <Grid justify='space-between'>
-        <Grid.Col lg={8.5} sm={7} xs={6}>
-          <Text weight={600} size='lg'>
+    <Card style={{ color: 'initial' }} withBorder mb={16}>
+      <Grid justify='space-between' align='center'>
+        <Grid.Col
+          // @ts-ignore
+          component={NextLink}
+          href={`/election/${id}`}
+          lg={8}
+          sm={6.2}
+          xs={5}
+          span={10}
+          style={{ order: 0 }}>
+          <Text color='dark' weight={600} size='lg'>
             {title}
           </Text>
-          <Text size='sm' lineClamp={2}>
+          <Text color='dark' size='sm' lineClamp={2}>
             {description}
           </Text>
         </Grid.Col>
-        <Grid.Col lg={2.5} sm={3.5} xs={4.5} span={9}>
+        <Grid.Col
+          // @ts-ignore
+          component={NextLink}
+          href={`/election/${id}`}
+          lg={2.5}
+          sm={3.5}
+          xs={4.5}
+          span={9}
+          style={{ order: 1 }}>
           {start ? (
             <>
-              <Text weight={600} size='md'>
+              <Text color='dark' weight={600} size='md'>
                 Duration
               </Text>
-              <Text>
+              <Text color='dark'>
                 {!end
                   ? `Starts from ${formatDate2(start)}`
                   : formatDate2(start)}{' '}
@@ -58,14 +83,23 @@ export const ElectionCard: FC<ElectionCardProps> = (props) => {
           )}
         </Grid.Col>
         <Grid.Col
+          // @ts-ignore
+          component={NextLink}
+          href={`/election/${id}`}
           lg={1}
           sm={1.5}
           xs={1.5}
           span={3}
-          style={{ textAlign: 'right', marginTop: isExtraSmall ? 'auto' : 0 }}>
+          style={{
+            textAlign: 'right',
+            marginTop: isExtraSmall ? 'auto' : 0,
+            order: 1,
+          }}>
           <Text
+            // color='dark'
             className='border'
             component='span'
+            // transform='capitalize'
             size='sm'
             weight={600}
             sx={(theme) => ({
@@ -78,6 +112,22 @@ export const ElectionCard: FC<ElectionCardProps> = (props) => {
             py={4}>
             {status}
           </Text>
+        </Grid.Col>
+        <Grid.Col
+          style={{ order: isExtraSmall ? 0 : 1 }}
+          lg={0.5}
+          sm={0.8}
+          xs={1}
+          span={2}>
+          <Tooltip label={`Delete ${title}`} style={{ width: '100%' }}>
+            <ActionIcon
+              color='red'
+              onClick={() => handleDelete(mutate)}
+              ml='auto'
+              mr={isExtraSmall ? 'auto' : undefined}>
+              <Trash size={22} />
+            </ActionIcon>
+          </Tooltip>
         </Grid.Col>
       </Grid>
     </Card>

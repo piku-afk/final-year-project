@@ -1,16 +1,9 @@
-import {
-  ActionIcon,
-  Button,
-  Container,
-  Divider,
-  Group,
-  Title,
-} from '@mantine/core';
+import { ActionIcon, Button, Group, Title, Tooltip } from '@mantine/core';
 import { useDebouncedValue } from '@mantine/hooks';
 import { Filter, NewElection } from 'components/Dashboard';
 import { CardContainer } from 'components/Dashboard/CardContainer';
 import { useMediaQuery } from 'hooks';
-import { useElections } from 'hooks/fetchers';
+import { getAllElections } from 'hooks/fetchers';
 import { withDefaultLayout } from 'layouts';
 import {
   GetServerSideProps,
@@ -19,10 +12,11 @@ import {
 } from 'next';
 import Head from 'next/head';
 import { prisma } from 'prisma/prisma';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import useSWR from 'swr';
 import { Plus } from 'tabler-icons-react';
 import { withSessionSsr } from 'utils/configs';
+import { ApiEndpoints } from 'utils/constants';
 
 export const getServerSideProps: GetServerSideProps = withSessionSsr(
   async (context: GetServerSidePropsContext) => {
@@ -63,16 +57,9 @@ const DashBoard: NextPageWithLayout = () => {
     data: elections = [],
     isValidating,
     mutate,
-  } = useSWR(
-    {
-      url: '/api/election',
-      ...(debouncedSearch && { search: debouncedSearch }),
-    },
-    useElections,
-    {
-      focusThrottleInterval: 60 * 1000,
-    }
-  );
+  } = useSWR([ApiEndpoints.election, debouncedSearch], getAllElections, {
+    focusThrottleInterval: 60 * 1000,
+  });
 
   return (
     <>
@@ -83,9 +70,15 @@ const DashBoard: NextPageWithLayout = () => {
       <Group mb={32} className='justify-content-between'>
         <Title style={{ fontWeight: 600 }}>Dashboard</Title>
         {isExtraSmall ? (
-          <ActionIcon color='cyan' variant='light' size='lg'>
-            <Plus size={20} />
-          </ActionIcon>
+          <Tooltip label='Create new election' position='top'>
+            <ActionIcon
+              color='cyan'
+              variant='light'
+              onClick={() => setNewElection(true)}
+              size='lg'>
+              <Plus size={20} />
+            </ActionIcon>
+          </Tooltip>
         ) : (
           <Button
             color='cyan'
@@ -96,8 +89,16 @@ const DashBoard: NextPageWithLayout = () => {
         )}
       </Group>
       <Filter search={search} setSearch={setSearch} loading={isValidating} />
-      <CardContainer elections={elections} loading={isValidating} />
-      <NewElection open={newElection} onClose={() => setNewElection(false)} />
+      <CardContainer
+        elections={elections}
+        loading={isValidating}
+        mutate={mutate}
+      />
+      <NewElection
+        open={newElection}
+        onClose={() => setNewElection(false)}
+        mutate={mutate}
+      />
     </>
   );
 };
