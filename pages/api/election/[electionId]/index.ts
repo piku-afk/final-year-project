@@ -23,10 +23,24 @@ handler.get(async (req: ExtendedNextApiRequest, res) => {
 
   const election = await prisma.election.findFirst({
     where: { id: +electionId, userId: id },
+    // include: { _count: { select: { ElectionOption: true } } },
+    // select: {
+    //   ElectionQuestion: {
+    //     select: { _count: true },
+    //   },
+    // },
   });
   if (!election) return SendBadRequest(res, 'No election found');
 
   res.json(election);
+});
+
+handler.delete(async (req: ExtendedNextApiRequest, res) => {
+  const { query } = req;
+  const { electionId } = query as { electionId: string };
+  if (!electionId) return SendBadRequest(res, 'No election id was found');
+  const election = await prisma.election.delete({ where: { id: +electionId } });
+  res.json({ message: 'success', id: election.id });
 });
 
 const { title, description, status, makeOptionalString } = ZodValidators;
@@ -36,14 +50,6 @@ const dataSchema = z.object({
     status: status.optional(),
     title: makeOptionalString(title),
   }),
-});
-
-handler.delete(async (req: ExtendedNextApiRequest, res) => {
-  const { query } = req;
-  const { electionId } = query as { electionId: string };
-  if (!electionId) return SendBadRequest(res, 'No election id was found');
-  const election = await prisma.election.delete({ where: { id: +electionId } });
-  res.json({ message: 'success', id: election.id });
 });
 
 handler

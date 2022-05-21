@@ -22,16 +22,16 @@ model User {
 }
 
 model Election {
-  id               Int                @id @default(autoincrement())
-  title            String
-  description      String?
-  createdBy        User               @relation(fields: [userId], references: [id])
-  userId           Int
-  createdAt        DateTime           @default(now())
-  start            DateTime?
-  end              DateTime?
-  status           Status             @default(DRAFT)
-  ElectionQuestion ElectionQuestion[]
+  id             Int              @id @default(autoincrement())
+  title          String
+  description    String?
+  createdBy      User             @relation(fields: [userId], references: [id])
+  userId         Int
+  createdAt      DateTime         @default(now())
+  start          DateTime?
+  end            DateTime?
+  status         Status           @default(DRAFT)
+  ElectionOption ElectionOption[]
 }
 
 enum Status {
@@ -40,10 +40,10 @@ enum Status {
   COMPLETED
 }
 
-model ElectionQuestion {
+model ElectionOption {
   id          Int      @id @default(autoincrement())
   title       String
   description String?
-  election    Election @relation(fields: [electionId], references: [id])
   electionId  Int
+  election    Election @relation(fields: [electionId], references: [id])
 }

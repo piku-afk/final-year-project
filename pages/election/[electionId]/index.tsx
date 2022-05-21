@@ -15,7 +15,7 @@ const OverView: NextPageWithLayout = () => {
         <Grid align='flex-end'>
           <Grid.Col xs={10} span={7}>
             <Textarea
-              description='You will provided with an election url which you share with others once you launch this election.'
+              description='You will provided with an election url which you share with others once you launch the election.'
               minRows={1}
               disabled
               label='Election Url'

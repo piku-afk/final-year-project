@@ -73,12 +73,14 @@ const Header = () => {
 
 const ElectionDetailLayout: FC = (props) => {
   const { children } = props;
+  const { asPath } = useRouter();
+  const isLaunchPage = asPath.includes('launch');
 
   return (
     <ElectionStore>
       <Header />
 
-      <Container px={0} size='md'>
+      <Container px={0} size={isLaunchPage ? 'lg' : 'md'}>
         {children}
       </Container>
     </ElectionStore>

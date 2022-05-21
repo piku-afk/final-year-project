@@ -2,6 +2,7 @@ import {
   Card,
   Center,
   Container,
+  DefaultMantineColor,
   Grid,
   Group,
   Overlay,
@@ -9,48 +10,70 @@ import {
   Text,
   Title,
 } from '@mantine/core';
-import { Users } from 'tabler-icons-react';
+import { useElectionStore } from 'context/ElectionStore';
+import { FC } from 'react';
+import { Icon, User, Users } from 'tabler-icons-react';
 
 const stats = [
   { label: 'Voters Count', icon: Users, color: 'orange' },
   { label: 'Questions', icon: Users, color: 'grape' },
 ];
 
+interface StatusCardProps {
+  count: number;
+  Icon: Icon;
+  color: DefaultMantineColor;
+  label: string;
+}
+
+const StatusCard: FC<StatusCardProps> = (props) => {
+  const { label, count, Icon, color } = props;
+
+  return (
+    <Grid.Col xs={6}>
+      <Card withBorder>
+        <Group>
+          <RingProgress
+            size={80}
+            roundCaps
+            thickness={8}
+            sections={[{ value: 100, color }]}
+            label={
+              <Center>
+                <Icon color='gray' size={20} />
+              </Center>
+            }
+          />
+          <div>
+            <Text color='dimmed' size='sm' transform='uppercase' weight={700}>
+              {label}
+            </Text>
+            <Text weight={700} size='xl'>
+              {count || 0}
+            </Text>
+          </div>
+        </Group>
+      </Card>
+    </Grid.Col>
+  );
+};
+
 export const Status = () => {
+  const {
+    state: { election },
+  } = useElectionStore();
+  const { _count } = election as { _count: { [key: string]: number } };
+  const { ElectionQuestion } = _count || {};
+
   return (
     <Grid gutter='xl'>
-      {stats.map(({ color, icon: Icon, label }) => (
-        <Grid.Col key={label} xs={6}>
-          <Card withBorder>
-            <Group>
-              <RingProgress
-                size={80}
-                roundCaps
-                thickness={8}
-                sections={[{ value: 100, color }]}
-                label={
-                  <Center>
-                    {/* <Icon size={22} /> */}
-                    <Icon color='gray' size={20} />
-                  </Center>
-                }
-              />
-              <div>
-                <Text
-                  color='dimmed'
-                  size='sm'
-                  transform='uppercase'
-                  weight={700}>
-                  {label}
-                </Text>
-                <Text weight={700} size='xl'>
-                  1
-                </Text>
-              </div>
-            </Group>
-          </Card>
-        </Grid.Col>
-      ))}
+      <StatusCard label='Voters' count={0} Icon={Users} color='orange' />
+      <StatusCard
+        label='Question'
+        count={ElectionQuestion}
+        Icon={Users}
+        color='grape'
+      />
     </Grid>
   );
 };

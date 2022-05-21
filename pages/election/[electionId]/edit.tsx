@@ -11,12 +11,13 @@ import {
   Text,
   Textarea,
   TextInput,
+  Title,
   Tooltip,
 } from '@mantine/core';
 import { useForm, zodResolver } from '@mantine/form';
 import { showNotification, NotificationProps } from '@mantine/notifications';
 import axios from 'axios';
-import { NewQuestion } from 'components/Election/Edit';
+import { NewQuestion, OptionList } from 'components/Election/Edit';
 import { ElectionActionTypes } from 'context/electionReducer';
 import { useElectionStore } from 'context/ElectionStore';
 import { useDeleteElection, useMediaQuery } from 'hooks';
@@ -45,7 +46,7 @@ const EditElection: NextPageWithLayout = () => {
     initialValues: { title, description },
     schema: zodResolver(dataSchema),
   });
-  const [showNewQuestion, setShowNewQuestion] = useState(false);
+  const [showNewOption, setShowNewOption] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const { mutate } = useSWRConfig();
@@ -56,7 +57,7 @@ const EditElection: NextPageWithLayout = () => {
     setValues({ title: title || '', description: description || '' });
   }, [title, description, setValues]);
 
-  const handleSubmit = async (formData: typeof form.values) => {
+  const handleElectionSubmit = async (formData: typeof form.values) => {
     const notificationObject: NotificationProps = {
       message: 'Election details updated successfully',
       color: 'green',
@@ -70,6 +71,7 @@ const EditElection: NextPageWithLayout = () => {
       );
       await mutate(ApiEndpoints.election);
       showNotification(notificationObject);
+
       const { title, description } = data;
       dispatch({
         type: ElectionActionTypes.setElection,
@@ -88,7 +90,7 @@ const EditElection: NextPageWithLayout = () => {
           <>
             <Tooltip label='Create new question' ml='auto'>
               <ActionIcon
-                onClick={() => setShowNewQuestion(true)}
+                onClick={() => setShowNewOption(true)}
                 color='cyan'
                 variant='light'>
                 <Plus size={20} />
@@ -108,10 +110,10 @@ const EditElection: NextPageWithLayout = () => {
             <Button
               ml='auto'
               leftIcon={<Plus size={18} />}
-              onClick={() => setShowNewQuestion(true)}
+              onClick={() => setShowNewOption(true)}
               color='cyan'
               variant='light'>
-              Add Question
+              Add Option
             </Button>
             <Tooltip label={`Delete ${title}`}>
               <Button
@@ -125,13 +127,13 @@ const EditElection: NextPageWithLayout = () => {
           </>
         )}
       </Group>
-      <Card component='form' onSubmit={form.onSubmit(handleSubmit)}>
+      <Card component='form' onSubmit={form.onSubmit(handleElectionSubmit)}>
         <Accordion
           // initialState={{ total: 1, initial: 1 }}
           initialItem={0}
           iconPosition='right'
           styles={{ item: { borderBottom: 'none' } }}>
-          <AccordionItem label='Election Details'>
+          <Accordion.Item label='Election Details'>
             <Collapse in={Boolean(errorMessage)} my={8}>
               <Alert
                 icon={<AlertCircle size={16} />}
@@ -179,12 +181,13 @@ const EditElection: NextPageWithLayout = () => {
               ml='auto'>
               Sav{loading ? 'ing' : 'e'}
             </Button>
-          </AccordionItem>
+          </Accordion.Item>
         </Accordion>
       </Card>
+      <OptionList />
       <NewQuestion
-        open={showNewQuestion}
-        onClose={() => setShowNewQuestion(false)}
+        open={showNewOption}
+        onClose={() => setShowNewOption(false)}
       />
     </>
   );
