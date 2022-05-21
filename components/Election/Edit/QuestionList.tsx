@@ -45,7 +45,7 @@ export const OptionList = () => {
     `${ApiEndpoints.election}/${id}/options`,
     getQuestions
   );
-  const { isExtraSmall } = useMediaQuery();
+
   const handleQuestionDelete = useDeleteQuestion();
   const handleOptionDelete = useDeleteOption();
   const [showNewOption, setShowNewOption] = useState(false);
@@ -74,7 +74,7 @@ export const OptionList = () => {
             return (
               <li key={id} className='list-group-item'>
                 <Grid>
-                  <Grid.Col xs={11}>
+                  <Grid.Col sm={11} xs={10.5} span={9}>
                     <Text size='sm' weight={600}>
                       {title}
                     </Text>
@@ -82,7 +82,11 @@ export const OptionList = () => {
                       {description}
                     </Text>
                   </Grid.Col>
-                  <Grid.Col xs={1} className='d-flex justify-content-end'>
+                  <Grid.Col
+                    sm={1}
+                    xs={1.5}
+                    span={3}
+                    className='d-flex justify-content-end'>
                     <Tooltip label='Edit'>
                       <ActionIcon
                         color='cyan'
@@ -126,143 +130,3 @@ export const OptionList = () => {
     </Card>
   );
 };
-
-/*
-      <Accordion
-        iconPosition='right'
-        multiple
-        initialItem={0}
-        styles={{
-          itemTitle: { textTransform: 'capitalize' },
-          item: { borderBottom: 'none' },
-          label: { textTransform: 'capitalize' },
-        }}>
-        {data?.map((question) => {
-          const { id: questionId, title, description } = question;
-          return (
-            <Accordion.Item key={questionId} label={title} my={16}>
-              <Group style={{ flexWrap: 'nowrap', alignItems: 'flex-start' }}>
-                <Spoiler
-                  style={{ flexGrow: 1 }}
-                  maxHeight={80}
-                  showLabel='Show more'
-                  hideLabel='Hide'>
-                  <Text component='span' color='dimmed' weight={600}>
-                    Description:{' '}
-                  </Text>
-                  {description}
-                </Spoiler>
-                <Box
-                  mt={4}
-                  style={{
-                    minWidth: 64,
-                    display: 'flex',
-                    justifyContent: 'flex-end',
-                  }}>
-                  <Tooltip label='Create option'>
-                    <ActionIcon
-                      color='cyan'
-                      variant='light'
-                      onClick={() => {
-                        setShowNewOption(true);
-                      }}>
-                      <Plus size={20} />
-                    </ActionIcon>
-                  </Tooltip>
-                  <Tooltip label='Delete question' ml={8}>
-                    <ActionIcon
-                      color='red'
-                      variant='light'
-                      onClick={() =>
-                        handleQuestionDelete({
-                          title,
-                          questionId: questionId,
-                          mutate,
-                        })
-                      }>
-                      <Trash size={20} />
-                    </ActionIcon>
-                  </Tooltip>
-                </Box>
-              </Group>
-             {QuestionOption.length > 0 && (
-                <>
-                  <Text weight={600} my={8}>
-                    Choices:
-                  </Text>
-                  <ol
-                    style={{ borderRadius: 8 }}
-                    className='list-group list-group-numbered list-group-flush'>
-                    {QuestionOption.map((option) => {
-                      const { id, title, description } = option;
-                      return (
-                        <li
-                          key={id}
-                          className='list-group-item d-flex justify-content-between align-items-start'>
-                          <div
-                            style={{ flexGrow: +isExtraSmall }}
-                            className='ms-2 me-auto d-inline'>
-                            <Text ml={8} transform='capitalize' weight={500}>
-                              {title}
-                            </Text>
-                            <Text ml={8} size='sm' color='gray'>
-                              {description}
-                            </Text>
-
-                            {isExtraSmall && (
-                              <Group grow>
-                                <Button
-                                  size='xs'
-                                  color='cyan'
-                                  variant='light'
-                                  leftIcon={<Pencil size={16} />}>
-                                  Edit
-                                </Button>
-                              </Group>
-                            )}
-                          </div>
-                          {!isExtraSmall && (
-                            <div
-                              style={{
-                                marginRight: -16,
-                              }}>
-                              <Tooltip label='Edit'>
-                                <ActionIcon
-                                  color='cyan'
-                                  variant='light'
-                                  onClick={() => {
-                                    setShowNewOption(true);
-                                    setSelectedQuestion(question);
-                                    setSelectedOption(option);
-                                  }}>
-                                  <Pencil size={18} />
-                                </ActionIcon>
-                              </Tooltip>
-                              <Tooltip label={`Delete ${title}`} ml={8}>
-                                <ActionIcon
-                                  color='red'
-                                  variant='light'
-                                  onClick={() =>
-                                    handleOptionDelete({
-                                      mutate,
-                                      questionId,
-                                      optionId: id,
-                                      title,
-                                    })
-                                  }>
-                                  <Trash size={18} />
-                                </ActionIcon>
-                              </Tooltip>
-                            </div>
-                          )}
-                        </li>
-                      );
-                    })}
-                  </ol>
-                </>
-              )} 
-              </Accordion.Item>
-              );
-            })}
-          </Accordion>
-*/

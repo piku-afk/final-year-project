@@ -8,7 +8,7 @@ import { FC, ReactElement, useMemo } from 'react';
 const tabs = [
   { label: 'Overview', value: '' },
   { label: 'Edit', value: '/edit' },
-  // { label: 'Questions', value: '/questions' },
+  { label: 'Voters', value: '/voters' },
   { label: 'Results', value: '/result' },
   { label: 'Launch', value: '/launch' },
 ];

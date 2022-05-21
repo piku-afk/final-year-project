@@ -1,6 +1,10 @@
-import { Button, Group, Stepper, Text, Title } from '@mantine/core';
-import { ConfirmDetails } from 'components/Election/Launch';
-import { CheckBallot } from 'components/Election/Launch/CheckBallot';
+import { Stepper, Text } from '@mantine/core';
+import {
+  CheckOptions,
+  ConfirmDetails,
+  Terms,
+  Checkout,
+} from 'components/Election/Launch';
 import { useMediaQuery } from 'hooks';
 import { withElectionLayout } from 'layouts/Election';
 import { NextPageWithLayout } from 'next';
@@ -8,9 +12,9 @@ import { useState } from 'react';
 
 const steps = [
   { label: 'Confirm Details', Children: ConfirmDetails },
-  { label: 'Check Ballot', Children: CheckBallot },
-  { label: 'Terms', Children: ConfirmDetails },
-  { label: 'Checkout', Children: ConfirmDetails },
+  { label: 'Check Options', Children: CheckOptions },
+  { label: 'Terms', Children: Terms },
+  { label: 'Checkout', Children: Checkout },
 ];
 
 const ElectionLaunch: NextPageWithLayout = () => {
@@ -37,7 +41,8 @@ const ElectionLaunch: NextPageWithLayout = () => {
             <Stepper.Step
               key={label}
               label={!isExtraSmall && label}
-              allowStepSelect={active > index}>
+              allowStepSelect={active > index}
+              mb={16}>
               <Children step={active} nextStep={nextStep} prevStep={prevStep} />
             </Stepper.Step>
           );
