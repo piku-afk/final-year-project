@@ -63,13 +63,18 @@ export const Status = () => {
     state: { election },
   } = useElectionStore();
   const { _count } = election as { _count: { [key: string]: number } };
-  const { ElectionOption } = _count || {};
+  const { ElectionOption, Voters } = _count || {};
 
   return (
     <Grid gutter='xl'>
-      <StatusCard label='Total Voters' count={0} Icon={Users} color='orange' />
       <StatusCard
-        label='Question'
+        label='Total Voters'
+        count={Voters}
+        Icon={Users}
+        color='orange'
+      />
+      <StatusCard
+        label='Candidates'
         count={ElectionOption}
         Icon={Users}
         color='grape'

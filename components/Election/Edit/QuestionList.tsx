@@ -19,7 +19,7 @@ import { useState } from 'react';
 import useSWR from 'swr';
 import { Pencil, Plus, Trash } from 'tabler-icons-react';
 import { ApiEndpoints } from 'utils/constants';
-import { NewQuestion } from './NewQuestion';
+import { NewQuestion } from './NewOption';
 
 const initialQuestion = {
   id: 0,

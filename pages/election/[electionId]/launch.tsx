@@ -4,6 +4,7 @@ import {
   ConfirmDetails,
   Terms,
   Checkout,
+  Completed,
 } from 'components/Election/Launch';
 import { useMediaQuery } from 'hooks';
 import { withElectionLayout } from 'layouts/Election';
@@ -48,7 +49,7 @@ const ElectionLaunch: NextPageWithLayout = () => {
           );
         })}
         <Stepper.Completed>
-          Completed, click back button to get to previous step
+          <Completed />
         </Stepper.Completed>
       </Stepper>
     </>

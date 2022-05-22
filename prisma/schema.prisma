@@ -32,6 +32,7 @@ model Election {
   end            DateTime?
   status         Status           @default(DRAFT)
   ElectionOption ElectionOption[]
+  Voters         Voter[]
 }
 
 enum Status {
@@ -46,4 +47,12 @@ model ElectionOption {
   description String?
   electionId  Int
   election    Election @relation(fields: [electionId], references: [id])
+}
+
+model Voter {
+  id         Int      @id @default(autoincrement())
+  name       String
+  email      String
+  electionId Int
+  election   Election @relation(fields: [electionId], references: [id])
 }

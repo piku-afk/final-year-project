@@ -10,59 +10,53 @@ import {
   TextInput,
 } from '@mantine/core';
 import { useForm, zodResolver } from '@mantine/form';
+import { NotificationProps, showNotification } from '@mantine/notifications';
+import { Voter } from '@prisma/client';
 import axios from 'axios';
 import { useElectionStore } from 'context/ElectionStore';
 import { FC, useEffect, useState } from 'react';
+import { useSWRConfig } from 'swr';
+import { AlertCircle, Check, X } from 'tabler-icons-react';
 import { ZodValidators } from 'utils';
 import { ApiEndpoints } from 'utils/constants';
-import { z } from 'zod';
-import { showNotification, NotificationProps } from '@mantine/notifications';
-import { AlertCircle, Check, X } from 'tabler-icons-react';
 import { loginErrorHandler } from 'utils/errorHandlers';
-import { useSWRConfig } from 'swr';
-import { ElectionOption } from '@prisma/client';
+import { z } from 'zod';
 
 interface NewQuestion {
   open: boolean;
   onClose: () => void;
-  option?: ElectionOption;
+  voter: Voter | null;
 }
 
-const { title, description, makeOptionalString } = ZodValidators;
+const { title, email } = ZodValidators;
 const dataSchema = z.object({
-  title,
-  description: makeOptionalString(description),
+  name: title,
+  email,
 });
 
-export const NewQuestion: FC<NewQuestion> = (props) => {
-  const { open, onClose, option } = props;
+export const VoterModal: FC<NewQuestion> = (props) => {
+  const { onClose, open, voter } = props;
   const {
     state: {
-      election: { id },
+      election: { id: electionId },
     },
   } = useElectionStore();
-  const {
-    id: optionId,
-    title: optionTitle,
-    description: optionDescription,
-  } = option || {};
-  const { setValues, ...form } = useForm({
-    initialValues: {
-      title: '',
-      description: '',
-    },
-    schema: zodResolver(dataSchema),
-  });
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const { mutate } = useSWRConfig();
 
+  const { setValues, ...form } = useForm({
+    initialValues: {
+      name: '',
+      email: '',
+    },
+    schema: zodResolver(dataSchema),
+  });
+
   useEffect(() => {
-    setValues({
-      title: optionTitle || '',
-      description: optionDescription || '',
-    });
-  }, [setValues, optionTitle, optionDescription]);
+    const { name = '', email = '' } = voter || {};
+    setValues({ name, email });
+  }, [setValues, voter]);
 
   const handleClose = () => {
     onClose();
@@ -71,23 +65,20 @@ export const NewQuestion: FC<NewQuestion> = (props) => {
 
   const handleSubmit = async (formData: typeof form.values) => {
     const notificationObject: NotificationProps = {
-      message: 'Election details updated successfully',
+      message: 'User details updated successfully',
       color: 'green',
       icon: <Check />,
     };
     setErrorMessage('');
     setLoading(true);
-    const url = optionId
-      ? `${ApiEndpoints.election}/${id}/option/${optionId}`
-      : `${ApiEndpoints.election}/${id}/newoption`;
-
+    const baseUrl = `${ApiEndpoints.election}/${electionId}`;
     try {
       const { data } = await axios({
-        url,
-        method: optionId ? 'PUT' : 'POST',
+        url: `${baseUrl}/voter/${voter?.id}`,
+        method: 'PUT',
         data: formData,
       });
-      await mutate(`${ApiEndpoints.election}/${id}/options`);
+      await mutate(`${baseUrl}/voters`);
 
       if (data.id) {
         showNotification(notificationObject);
@@ -105,7 +96,7 @@ export const NewQuestion: FC<NewQuestion> = (props) => {
       centered
       opened={open}
       onClose={handleClose}
-      title={optionId ? 'Edit Option' : `Add New Option`}>
+      title='Edit Voter'>
       {/* @ts-ignore */}
       <Grid component='form' onSubmit={form.onSubmit(handleSubmit)}>
         {Boolean(errorMessage) && (
@@ -138,20 +129,27 @@ export const NewQuestion: FC<NewQuestion> = (props) => {
         )}
         <Grid.Col>
           <TextInput
-            required
             disabled={loading}
-            label='Title'
-            {...form.getInputProps('title')}
+            label='Name'
+            {...form.getInputProps('name')}
           />
         </Grid.Col>
         <Grid.Col>
-          <Textarea
+          <TextInput
+            type='email'
             disabled={loading}
-            minRows={3}
-            label='Description'
-            {...form.getInputProps('description')}
+            label='Email'
+            {...form.getInputProps('email')}
           />
         </Grid.Col>
+        <Grid.Col>
+          <TextInput
+            disabled
+            label='Phone'
+            // value={voter.phone}
+          />
+        </Grid.Col>
+
         <Grid.Col className='d-flex justify-content-end'>
           <Button
             onClick={handleClose}
@@ -166,9 +164,7 @@ export const NewQuestion: FC<NewQuestion> = (props) => {
             type='submit'
             color='cyan'
             variant='light'>
-            {optionId
-              ? 'Sav' + (loading ? 'ing' : 'e')
-              : 'Creat' + (loading ? 'ing' : 'e')}
+            Sav{loading ? 'ing' : 'e'}
           </Button>
         </Grid.Col>
       </Grid>
