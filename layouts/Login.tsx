@@ -7,16 +7,19 @@ import {
   Text,
   Title,
 } from '@mantine/core';
-import { FC } from 'react';
+import { FC, PropsWithChildren } from 'react';
 import VotingSVG from 'public/images/voting_nvu7.svg';
 import { Constants } from 'utils/constants';
 import { useRouter } from 'next/router';
+import { Props } from 'next/script';
 
 interface LoginLayoutPropTypes {
   image: { src: string };
 }
 // some
-export const LoginLayout: FC<LoginLayoutPropTypes> = (props) => {
+export const LoginLayout: FC<PropsWithChildren<LoginLayoutPropTypes>> = (
+  props
+) => {
   const { children, image } = props;
   const { pathname } = useRouter();
   const isLogin = pathname === '/login';

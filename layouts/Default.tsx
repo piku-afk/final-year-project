@@ -1,6 +1,6 @@
 import { useResizeObserver } from '@mantine/hooks';
 import { CustomContainer } from 'components/CustomizeMantine';
-import { FC, ReactElement, RefObject } from 'react';
+import { FC, PropsWithChildren, ReactElement, RefObject } from 'react';
 import { Footer } from './Footer';
 import { Header } from './Header';
 
@@ -12,7 +12,7 @@ export const withDefaultLayout = (page: ReactElement) => (
   <DefaultLayout>{page}</DefaultLayout>
 );
 
-const DefaultLayout: FC<DefaultLayout> = (props) => {
+const DefaultLayout: FC<PropsWithChildren<DefaultLayout>> = (props) => {
   const { children } = props;
   const [headerRef, rect] = useResizeObserver();
 

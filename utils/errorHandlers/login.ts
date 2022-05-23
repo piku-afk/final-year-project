@@ -17,7 +17,7 @@ export const loginErrorHandler = (parameters: loginErrorHandlerParameters) => {
 
   switch (status) {
     case 400:
-      const { issues = [] } = data || {};
+      const { issues = [] } = (data as { issues: any[] }) || {};
       const { message = '' } = (issues[0] as { message: string }) || {};
       if (callback && message) {
         callback(message);

@@ -7,11 +7,9 @@ export enum ApiEndpoints {
 
 export enum Constants {
   metamaskLink = 'https://metamask.io/',
-
   deployedNetwork = 'Ganache Test Network',
-
+  deploymentAddress = '0x33FE38e94029c7C19bF121f05059E8BCb9E35D28',
   projectName = 'E-Voting dApp',
-
   // This won't cost you any ether.
   signMessage = `
   Hi there from Voting dApp!
@@ -20,7 +18,6 @@ export enum Constants {
 
   To stop hackers using you wallet, here's a unique messageID they cant't guess:
   `,
-
   tokenName = 'FINAL_YEAR_TOKEN',
 }
 

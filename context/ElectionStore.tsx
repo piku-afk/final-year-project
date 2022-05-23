@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import {
   createContext,
   FC,
+  PropsWithChildren,
   useContext,
   useEffect,
   useReducer,
@@ -27,7 +28,7 @@ const ElectionContext = createContext<ElectionContextType>({
 
 export const useElectionStore = () => useContext(ElectionContext);
 
-export const ElectionStore: FC = (props) => {
+export const ElectionStore: FC<PropsWithChildren<{}>> = (props) => {
   const { children } = props;
   const [state, dispatch] = useReducer(electionReducer, electionInitialState);
   const [isInitializing, setIsInitializing] = useState(true);

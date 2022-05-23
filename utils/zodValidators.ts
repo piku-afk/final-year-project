@@ -20,4 +20,7 @@ export const ZodValidators = {
   start: z.date(),
   status: z.nativeEnum(Status),
   title: z.string().min(3),
+  address: z
+    .string()
+    .regex(/(\b0x[a-f0-9]{40}\b)/gi, 'Address must be valid ETH address'),
 };

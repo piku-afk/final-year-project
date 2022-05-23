@@ -4,3 +4,4 @@ export * from 'hooks/useDeleteAccount';
 export * from 'hooks/useDeleteVoters';
 export * from 'hooks/useEthers';
 export * from 'hooks/useMediaQuery';
+export * from 'hooks/useElectionFactory';

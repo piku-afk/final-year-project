@@ -38,15 +38,15 @@ const initialOption = {
 export const OptionList = () => {
   const {
     state: {
-      election: { id },
+      election: { id, status },
     },
   } = useElectionStore();
   const { isValidating, data, mutate } = useSWR(
     `${ApiEndpoints.election}/${id}/options`,
     getQuestions
   );
+  const isLive = status === 'ONGOING';
 
-  const handleQuestionDelete = useDeleteQuestion();
   const handleOptionDelete = useDeleteOption();
   const [showNewOption, setShowNewOption] = useState(false);
   const [selectedOption, setSelectedOption] =
@@ -74,7 +74,10 @@ export const OptionList = () => {
             return (
               <li key={id} className='list-group-item'>
                 <Grid>
-                  <Grid.Col sm={11} xs={10.5} span={9}>
+                  <Grid.Col
+                    sm={isLive ? 12 : 11}
+                    xs={isLive ? 12 : 10.5}
+                    span={isLive ? 12 : 9}>
                     <Text size='sm' weight={600}>
                       {title}
                     </Text>
@@ -82,37 +85,39 @@ export const OptionList = () => {
                       {description}
                     </Text>
                   </Grid.Col>
-                  <Grid.Col
-                    sm={1}
-                    xs={1.5}
-                    span={3}
-                    className='d-flex justify-content-end'>
-                    <Tooltip label='Edit'>
-                      <ActionIcon
-                        color='cyan'
-                        variant='light'
-                        onClick={() => {
-                          setShowNewOption(true);
-                          setSelectedOption(option);
-                        }}>
-                        <Pencil size={18} />
-                      </ActionIcon>
-                    </Tooltip>
-                    <Tooltip label={`Delete ${title}`} ml={8}>
-                      <ActionIcon
-                        color='red'
-                        variant='light'
-                        onClick={() =>
-                          handleOptionDelete({
-                            mutate,
-                            optionId: id,
-                            title,
-                          })
-                        }>
-                        <Trash size={18} />
-                      </ActionIcon>
-                    </Tooltip>
-                  </Grid.Col>
+                  {!isLive && (
+                    <Grid.Col
+                      sm={1}
+                      xs={1.5}
+                      span={3}
+                      className='d-flex justify-content-end'>
+                      <Tooltip label='Edit'>
+                        <ActionIcon
+                          color='cyan'
+                          variant='light'
+                          onClick={() => {
+                            setShowNewOption(true);
+                            setSelectedOption(option);
+                          }}>
+                          <Pencil size={18} />
+                        </ActionIcon>
+                      </Tooltip>
+                      <Tooltip label={`Delete ${title}`} ml={8}>
+                        <ActionIcon
+                          color='red'
+                          variant='light'
+                          onClick={() =>
+                            handleOptionDelete({
+                              mutate,
+                              optionId: id,
+                              title,
+                            })
+                          }>
+                          <Trash size={18} />
+                        </ActionIcon>
+                      </Tooltip>
+                    </Grid.Col>
+                  )}
                 </Grid>
               </li>
             );

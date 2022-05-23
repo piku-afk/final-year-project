@@ -1,7 +1,7 @@
-import { FC } from 'react';
+import { FC, PropsWithChildren } from 'react';
 import { MantineProvider as Provider, useMantineTheme } from '@mantine/core';
 
-export const MantineProvider: FC = (props) => {
+export const MantineProvider: FC<PropsWithChildren<{}>> = (props) => {
   const { children } = props;
   const theme = useMantineTheme();
 

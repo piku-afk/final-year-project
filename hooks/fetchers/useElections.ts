@@ -6,11 +6,17 @@ import axios from 'axios';
 //   search: string;
 // }
 
-export const getAllElections = async (url: string, search: string = '') => {
+export const getAllElections = async (
+  url: string,
+  search: string = '',
+  status = 'ALL'
+) => {
   console.log('url', url);
   if (!url) throw new Error('Url not found');
+  console.log(status !== 'ALL', status);
+
   const { data } = (await axios.get(url, {
-    params: { search },
+    params: { search, ...(status !== 'ALL' && { status }) },
   })) as {
     data: Election[];
   };

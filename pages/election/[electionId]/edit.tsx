@@ -37,7 +37,7 @@ const dataSchema = z.object({ title, description });
 const EditElection: NextPageWithLayout = () => {
   const {
     state: {
-      election: { title, description, id },
+      election: { title, description, id, status },
     },
     dispatch,
   } = useElectionStore();
@@ -52,6 +52,7 @@ const EditElection: NextPageWithLayout = () => {
   const { mutate } = useSWRConfig();
   const handleDelete = useDeleteElection(id, title);
   const { isExtraSmall } = useMediaQuery();
+  const isLive = status === 'ONGOING';
 
   useEffect(() => {
     setValues({ title: title || '', description: description || '' });
@@ -86,7 +87,17 @@ const EditElection: NextPageWithLayout = () => {
   return (
     <>
       <Group mb={16} position='center' spacing='sm'>
-        {isExtraSmall ? (
+        {isLive ? (
+          <>
+            <Button
+              ml='auto'
+              color='red'
+              variant='light'
+              leftIcon={<X size={16} />}>
+              Close Election
+            </Button>
+          </>
+        ) : isExtraSmall ? (
           <>
             <Tooltip label='Create new question' ml='auto'>
               <ActionIcon
@@ -161,18 +172,19 @@ const EditElection: NextPageWithLayout = () => {
 
             <TextInput
               mt={4}
-              disabled={loading}
+              disabled={loading || isLive}
               label='Title'
               {...form.getInputProps('title')}
             />
             <Textarea
-              disabled={loading}
+              disabled={loading || isLive}
               mt={8}
               label='Description'
               minRows={3}
               {...form.getInputProps('description')}
             />
             <Button
+              disabled={isLive}
               loading={loading}
               type='submit'
               color='cyan'

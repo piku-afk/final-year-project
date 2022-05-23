@@ -1,4 +1,4 @@
-import { Stepper, Text } from '@mantine/core';
+import { Button, Card, Container, Stepper, Text } from '@mantine/core';
 import {
   CheckOptions,
   ConfirmDetails,
@@ -6,9 +6,11 @@ import {
   Checkout,
   Completed,
 } from 'components/Election/Launch';
+import { useElectionStore } from 'context/ElectionStore';
 import { useMediaQuery } from 'hooks';
 import { withElectionLayout } from 'layouts/Election';
 import { NextPageWithLayout } from 'next';
+import Link from 'next/link';
 import { useState } from 'react';
 
 const steps = [
@@ -19,12 +21,29 @@ const steps = [
 ];
 
 const ElectionLaunch: NextPageWithLayout = () => {
+  const {
+    state: {
+      election: { id, status },
+    },
+  } = useElectionStore();
   const { isExtraSmall } = useMediaQuery();
   const [active, setActive] = useState(0);
   const nextStep = () => setActive((prev) => (prev < 4 ? prev + 1 : prev));
   const prevStep = () => setActive((prev) => (prev > 0 ? prev - 1 : prev));
+  const isLive = status === 'ONGOING';
 
-  return (
+  return isLive ? (
+    <Card component={Container} size='xs' className='text-center'>
+      <Text size='xl' weight={600}>
+        Your election is already live!
+      </Text>
+      <Link href={`/election/${id}/result`} passHref>
+        <Button mt={16} color='cyan' variant='light'>
+          Check Results
+        </Button>
+      </Link>
+    </Card>
+  ) : (
     <>
       <Text size='xl' weight={600} mb={24}>
         Launch Election

@@ -12,6 +12,7 @@ import {
   Dispatch,
   FC,
   MutableRefObject,
+  PropsWithChildren,
   SetStateAction,
   useCallback,
   useEffect,
@@ -37,7 +38,7 @@ interface Header {
   headerRef: MutableRefObject<HTMLElement>;
 }
 
-export const Header: FC<Header> = (props) => {
+export const Header: FC<PropsWithChildren<Header>> = (props) => {
   const { children, headerRef } = props;
   const { push, pathname, ...router } = useRouter();
   const [showShadow, setShowShadow] = useState(false);

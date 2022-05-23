@@ -1,17 +1,25 @@
-import { Box, Grid, Select, TextInput, useMantineTheme } from '@mantine/core';
-import { useFocusTrap } from '@mantine/hooks';
+import { Box, Grid, Select, TextInput } from '@mantine/core';
 import { useMediaQuery } from 'hooks';
-import { Dispatch, FC, SetStateAction, useEffect, useRef } from 'react';
+import { Dispatch, FC, SetStateAction } from 'react';
 import { Search } from 'tabler-icons-react';
+
+const filterOptions = [
+  { value: 'ALL', label: 'All' },
+  { value: 'DRAFT', label: 'Draft' },
+  { value: 'ONGOING', label: 'Ongoing' },
+  { value: 'COMPLETED', label: 'Completed' },
+];
 
 interface Filter {
   loading: boolean;
   search: string;
   setSearch: Dispatch<SetStateAction<string>>;
+  status: string;
+  setStatus: Dispatch<SetStateAction<string>>;
 }
 
 export const Filter: FC<Filter> = (props) => {
-  const { loading, search, setSearch } = props;
+  const { loading, search, setSearch, status, setStatus } = props;
   const { isExtraSmall } = useMediaQuery();
 
   return (
@@ -31,14 +39,10 @@ export const Filter: FC<Filter> = (props) => {
           <Select
             size='md'
             disabled={loading}
-            clearable
             placeholder={`Filter${isExtraSmall ? '' : ' by status'}`}
-            data={[
-              { value: 'react', label: 'React' },
-              { value: 'ng', label: 'Angular' },
-              { value: 'svelte', label: 'Svelte' },
-              { value: 'vue', label: 'Vue' },
-            ]}
+            data={filterOptions}
+            value={status}
+            onChange={(value) => setStatus(value || 'All')}
           />
         </Grid.Col>
       </Grid>

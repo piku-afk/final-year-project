@@ -1,4 +1,4 @@
-import Document, {
+import NextDocument, {
   DocumentContext,
   Html,
   Head,
@@ -9,9 +9,10 @@ import { ServerStyles, createStylesServer } from '@mantine/next';
 
 const stylesServer = createStylesServer();
 
-export default class _Document extends Document {
+// @ts-ignore
+export default class Document extends NextDocument {
   static async getInitialProps(ctx: DocumentContext) {
-    const initialProps = await Document.getInitialProps(ctx);
+    const initialProps = await NextDocument.getInitialProps(ctx);
 
     // Add your app specific logic here
 

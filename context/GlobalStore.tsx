@@ -2,6 +2,7 @@ import {
   createContext,
   Dispatch,
   FC,
+  PropsWithChildren,
   useContext,
   useEffect,
   useReducer,
@@ -24,7 +25,7 @@ const GlobalContext = createContext<GlobalContextType>({
 
 export const useGlobalStore = () => useContext(GlobalContext);
 
-export const GlobalStore: FC = (props) => {
+export const GlobalStore: FC<PropsWithChildren<{}>> = (props) => {
   const { children } = props;
   const [state, dispatch] = useReducer(reducer, initialState);
   const { data, isValidating } = useSWR('/api/auth/user', useUser);

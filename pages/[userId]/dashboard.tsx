@@ -52,14 +52,19 @@ const DashBoard: NextPageWithLayout = () => {
   const [newElection, setNewElection] = useState(false);
 
   const [search, setSearch] = useState('');
+  const [status, setStatus] = useState('ALL');
   const [debouncedSearch] = useDebouncedValue(search, 1000);
   const {
     data: elections = [],
     isValidating,
     mutate,
-  } = useSWR([ApiEndpoints.election, debouncedSearch], getAllElections, {
-    focusThrottleInterval: 60 * 1000,
-  });
+  } = useSWR(
+    [ApiEndpoints.election, debouncedSearch, status],
+    getAllElections,
+    {
+      focusThrottleInterval: 60 * 1000,
+    }
+  );
 
   return (
     <>
@@ -88,7 +93,13 @@ const DashBoard: NextPageWithLayout = () => {
           </Button>
         )}
       </Group>
-      <Filter search={search} setSearch={setSearch} loading={isValidating} />
+      <Filter
+        search={search}
+        setSearch={setSearch}
+        status={status}
+        setStatus={setStatus}
+        loading={isValidating}
+      />
       <CardContainer
         elections={elections}
         loading={isValidating}

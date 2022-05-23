@@ -13,7 +13,7 @@ import { useGlobalStore } from 'context/GlobalStore';
 import { useMediaQuery } from 'hooks';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { FC, ReactElement, ReactNode, useMemo } from 'react';
+import { FC, ReactElement, ReactNode, useMemo, PropsWithChildren } from 'react';
 import { ChevronLeft, Settings, ShieldLock, Wallet } from 'tabler-icons-react';
 import { withDefaultLayout } from '../Default';
 
@@ -96,7 +96,7 @@ export const SideNavigation = () => {
   );
 };
 
-const SettingsLayout: FC = (props) => {
+const SettingsLayout: FC<PropsWithChildren<{}>> = (props) => {
   const { children } = props;
   const {
     state: {

@@ -1,8 +1,18 @@
 import { Button, Card, Container, Text } from '@mantine/core';
 import { useGlobalStore } from 'context/GlobalStore';
+import { BigNumber, ethers } from 'ethers';
 import Link from 'next/link';
 import { FC, useState } from 'react';
-import { Rocket } from 'tabler-icons-react';
+import { Check, Rocket } from 'tabler-icons-react';
+import ElectionFactoryJSON from '../../../server/truffle/build/contracts/ElectionFactory.json';
+import ElectionJSON from '../../../server/truffle/build/contracts/Election.json';
+import { useElectionFactory } from 'hooks';
+import axios from 'axios';
+import { ApiEndpoints } from 'utils/constants';
+import { useElectionStore } from 'context/ElectionStore';
+import { loginErrorHandler } from 'utils/errorHandlers';
+import { mutate, useSWRConfig } from 'swr';
+import { NotificationProps, showNotification } from '@mantine/notifications';
 
 interface ConfirmDetailsProps {
   step: number;
@@ -19,11 +29,46 @@ export const Checkout: FC<ConfirmDetailsProps> = (props) => {
       currentUser: { id },
     },
   } = useGlobalStore();
+  const {
+    state: {
+      election: { id: electionId },
+    },
+  } = useElectionStore();
+  const electionFactory = useElectionFactory();
+  const { mutate } = useSWRConfig();
 
   const metamaskUrl = `/${id}/settings/metamask`;
 
-  const handleLaunch = () => {
-    nextStep();
+  const handleLaunch = async () => {
+    if (!electionFactory) return;
+    setLoading(true);
+    const notificationObject: NotificationProps = {
+      message: 'Something went wrong. Election is not launched.',
+      color: 'red',
+    };
+
+    const election = await electionFactory.deploy(number);
+    await election.deployTransaction.wait();
+    console.log(election.address);
+
+    try {
+      const { data } = await axios.post(
+        `${ApiEndpoints.election}/${electionId}/launch`,
+        { address: election.address }
+      );
+      const { id } = data || {};
+      if (id) {
+        await mutate(`${ApiEndpoints.election}/${electionId}`);
+        notificationObject.message = 'Election has been successfully deployed';
+        notificationObject.color = 'green';
+        notificationObject.icon = <Check size={18} />;
+        nextStep();
+      }
+    } catch (error) {
+      loginErrorHandler({ error: error } as { error: any });
+    }
+    setLoading(false);
+    showNotification(notificationObject);
   };
 
   return (

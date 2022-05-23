@@ -3,7 +3,7 @@ import { ElectionStore, useElectionStore } from 'context/ElectionStore';
 import { withDefaultLayout } from 'layouts/Default';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { FC, ReactElement, useMemo } from 'react';
+import { FC, PropsWithChildren, ReactElement, useMemo } from 'react';
 
 const tabs = [
   { label: 'Overview', value: '' },
@@ -71,7 +71,7 @@ const Header = () => {
   );
 };
 
-const ElectionDetailLayout: FC = (props) => {
+const ElectionDetailLayout: FC<PropsWithChildren<{}>> = (props) => {
   const { children } = props;
   const { asPath } = useRouter();
   const isLaunchPage = asPath.includes('launch');

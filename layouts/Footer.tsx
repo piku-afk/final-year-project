@@ -6,14 +6,14 @@ import {
 } from '@mantine/core';
 import { Constants } from 'utils/constants';
 import { useMediaQuery } from 'hooks';
-import { FC } from 'react';
+import { FC, PropsWithChildren } from 'react';
 import { CustomContainer } from 'components/CustomizeMantine';
 
 interface FooterProps {
   background?: 'white' | 'transparent';
 }
 
-export const Footer: FC<FooterProps> = (props) => {
+export const Footer: FC<PropsWithChildren<FooterProps>> = (props) => {
   const { background = 'white', children } = props;
 
   return (

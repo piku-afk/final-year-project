@@ -2,10 +2,10 @@ import { Card, Center, Grid } from '@mantine/core';
 import { useGlobalStore } from 'context/GlobalStore';
 import { useMediaQuery } from 'hooks';
 import Image, { ImageProps } from 'next/image';
-import { FC, ReactElement } from 'react';
+import { FC, PropsWithChildren, ReactElement } from 'react';
 import { withSettingsLayout } from '.';
 
-const SettingsTab: FC = (props) => {
+const SettingsTab: FC<PropsWithChildren<{}>> = (props) => {
   const { children } = props;
   const {
     state: {
