@@ -23,7 +23,11 @@ handler.get(async (req: ExtendedNextApiRequest, res) => {
 
   const election = await prisma.election.findFirst({
     where: { id: +electionId, userId: id },
-    include: { _count: { select: { ElectionOption: true, Voters: true } } },
+    include: {
+      createdBy: { select: { id: true, email: true } },
+      ElectionOption: { select: { id: true, title: true } },
+      _count: { select: { ElectionOption: true, Voters: true } },
+    },
   });
   if (!election) return SendBadRequest(res, 'No election found');
 

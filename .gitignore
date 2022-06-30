@@ -37,3 +37,7 @@ test.db
 
 # vercel
 .vercel
+
+# cypress
+cypress/integration/1-getting-started
+cypress/integration/2-advanced-examples

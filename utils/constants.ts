@@ -19,6 +19,8 @@ export enum Constants {
   To stop hackers using you wallet, here's a unique messageID they cant't guess:
   `,
   tokenName = 'FINAL_YEAR_TOKEN',
+  // ganache account to be used when voting for election
+  ganacheAccountNumber = 1,
 }
 
 export const Errors = {

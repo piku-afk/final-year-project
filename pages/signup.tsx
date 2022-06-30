@@ -23,18 +23,11 @@ import { ValidationMessages } from 'utils/validationMessages';
 import { useState } from 'react';
 import { loginErrorHandler } from 'utils/errorHandlers/login';
 
-interface FormInterface {
-  name: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
-
 const SignUp: NextPage = () => {
   const { push } = useRouter();
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const form = useForm<FormInterface>({
+  const form = useForm({
     initialValues: {
       name: '',
       email: '',
@@ -53,7 +46,7 @@ const SignUp: NextPage = () => {
     },
   });
 
-  const handleSubmit = async (formData: FormInterface) => {
+  const handleSubmit = async (formData: typeof form.values) => {
     const { name, email, password } = formData;
     const notificationObject: NotificationProps = {
       message: AlertMessages.signup.success,

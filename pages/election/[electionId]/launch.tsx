@@ -23,7 +23,7 @@ const steps = [
 const ElectionLaunch: NextPageWithLayout = () => {
   const {
     state: {
-      election: { id, status },
+      election: { id, status = 'ONGOING' },
     },
   } = useElectionStore();
   const { isExtraSmall } = useMediaQuery();
@@ -37,7 +37,7 @@ const ElectionLaunch: NextPageWithLayout = () => {
       <Text size='xl' weight={600}>
         Your election is already live!
       </Text>
-      <Link href={`/election/${id}/result`} passHref>
+      <Link href={`/election/${id}`} passHref>
         <Button mt={16} color='cyan' variant='light'>
           Check Results
         </Button>

@@ -9,7 +9,7 @@ const tabs = [
   { label: 'Overview', value: '' },
   { label: 'Edit', value: '/edit' },
   { label: 'Voters', value: '/voters' },
-  { label: 'Results', value: '/result' },
+  // { label: 'Results', value: '/result' },
   { label: 'Launch', value: '/launch' },
 ];
 

@@ -170,7 +170,7 @@ const Hero: NextPage = () => {
                   </Group>
                 )}
                 {!isExtraSmall && (
-                  <Link href='/ongoing' passHref>
+                  <Link href='/signup' passHref>
                     <Button
                       component='a'
                       sx={(theme) => ({

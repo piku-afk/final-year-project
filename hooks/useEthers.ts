@@ -7,8 +7,7 @@ export const initEthers = async () => {
     mustBeMetaMask: true,
   });
   if (ethereum) {
-    const provider = new ethers.providers.Web3Provider(ethereum, 'any');
-    return provider;
+    return new ethers.providers.Web3Provider(ethereum, 'any');
   }
   return null;
 };

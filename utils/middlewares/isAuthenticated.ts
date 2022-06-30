@@ -12,3 +12,16 @@ export const isAuthenticated = async (
   }
   next();
 };
+
+export const isAuthenticatedVoter = async (
+  req: ExtendedNextApiRequest,
+  res: NextApiResponse,
+  next: NextHandler
+) => {
+  const { voter } = req.session;
+  console.log(voter);
+  if (!voter || !voter.id) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+  next();
+};

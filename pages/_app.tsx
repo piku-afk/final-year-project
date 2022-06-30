@@ -16,6 +16,7 @@ type AppPropsWithLayout = AppProps & {
 declare module 'iron-session' {
   interface IronSessionData {
     user: { id: number };
+    voter: { id: number };
   }
 }
 
